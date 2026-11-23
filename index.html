@@ -423,6 +423,42 @@
       border-color: #4e7a61;
     }
 
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .preset-btn {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-chip-active);
+      border-color: var(--accent);
+    }
+
+    .auto-calc-banner {
+      background: var(--bg-soft);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+    }
+
+    .auto-calc-banner strong {
+      color: var(--accent-dark);
+    }
+
     .summary-pair {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -568,7 +604,7 @@
       </button>
     </nav>
 
-    <!-- 5. ひできち成長＆目標エリア（画像通り） -->
+    <!-- 5. ひできち成長＆目標エリア -->
     <section class="card" id="growthCard">
       <div class="section-top">
         <h2 class="section-title">ひできち成長</h2>
@@ -584,7 +620,6 @@
 
       <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;" />
 
-      <!-- 目標体脂肪率＆現在の体脂肪率 -->
       <div class="bf-goal-caption" id="goalBodyFatHeader">目標：体脂肪率 28%</div>
       <div class="rate-row">
         <span class="rate-big" id="currentBodyFatDisplay">36.4%</span>
@@ -595,7 +630,6 @@
         目標まであと <span class="bf-remain-highlight">8.4%</span>（37% → 28%）
       </div>
 
-      <!-- 体重カード・スタートカード -->
       <div class="metric-row">
         <div class="metric-box">
           <div style="font-size:12px; color:var(--text-sub);">体重</div>
@@ -639,7 +673,7 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事記録 -->
+    <!-- 7. 食事記録（foods.json連携・自動カロリー計算対応） -->
     <section class="card" id="mealCard">
       <h2 class="section-title" style="margin-bottom:12px;">食事記録</h2>
       <div class="date-nav-bar">
@@ -657,18 +691,33 @@
         <button type="button" class="meal-pill active" onclick="selectMeal(this, '夕食')">夕食</button>
         <button type="button" class="meal-pill" onclick="selectMeal(this, '間食')">間食</button>
       </div>
+
+      <div class="preset-row" aria-label="よく食べるメニュークイック入力">
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('ご飯 150g')">🍚 ご飯 150g</button>
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('鶏むね肉 100g')">🍗 鶏むね肉 100g</button>
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('ゆで卵 1個')">🥚 ゆで卵 1個</button>
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('豆乳 200ml')">🥛 豆乳 200ml</button>
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('サラダチキン 1個')">🥗 サラダチキン</button>
+        <button type="button" class="preset-btn" onclick="applyFoodPreset('バナナ 1本')">🍌 バナナ 1本</button>
+      </div>
+
       <form id="mealForm" class="form-grid">
         <div style="grid-column: 1 / -1;">
-          <label for="mealMenu">メニュー</label>
-          <input type="text" id="mealMenu" placeholder="ご飯、味噌汁、焼き魚 など" />
+          <label for="mealMenu">食べたもの（例：ご飯 150g、鶏むね肉 100g、ゆで卵 1個）</label>
+          <input type="text" id="mealMenu" placeholder="食べたものを入力すると自動でカロリー計算します" oninput="handleMealMenuInput()" />
         </div>
+
+        <div class="auto-calc-banner" id="autoCalcBanner" style="grid-column: 1 / -1;">
+          食べたものを入力すると、<strong>カロリー・たんぱく質</strong>を自動計算して下の欄に反映します（手入力で調整もできます）。
+        </div>
+
         <div>
           <label for="mealCal">カロリー (kcal)</label>
-          <input type="number" id="mealCal" placeholder="450" />
+          <input type="number" id="mealCal" placeholder="自動計算されます" />
         </div>
         <div>
           <label for="mealProtein">たんぱく質 (g)</label>
-          <input type="number" step="0.1" id="mealProtein" placeholder="22" />
+          <input type="number" step="0.1" id="mealProtein" placeholder="自動計算されます" />
         </div>
         <div style="grid-column: 1 / -1;">
           <label for="mealMemo">メモ</label>
@@ -757,6 +806,112 @@
   <script>
     const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
     const STORAGE_KEY = "diet_room_state_v2";
+
+    let FOOD_DICTIONARY = [];
+
+    async function loadFoodDictionary() {
+      try {
+        const res = await fetch("./foods.json");
+        if (!res.ok) throw new Error("foods.json load failed");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          FOOD_DICTIONARY = data;
+          if (document.getElementById("mealMenu").value.trim()) {
+            handleMealMenuInput();
+          }
+        }
+      } catch (e) {
+        console.warn("foods.json の読み込みに失敗しました:", e);
+      }
+    }
+
+    function extractQuantity(text, food) {
+      const cleaned = text.replace(/,/g, "");
+      const gMatch = cleaned.match(/([\d.]+)\s*(g|グラム|ml|ミリリットル)/i);
+      if (gMatch) {
+        const val = parseFloat(gMatch[1]);
+        if (!isNaN(val) && val > 0) return { amount: val, unitLabel: gMatch[2] };
+      }
+
+      const unitMatch = cleaned.match(/([\d.]+)\s*(個|本|枚|パック|杯|人前|切れ|房)/);
+      if (unitMatch) {
+        const val = parseFloat(unitMatch[1]);
+        if (!isNaN(val) && val > 0) return { amount: val, unitLabel: unitMatch[2] };
+      }
+
+      const halfMatch = cleaned.match(/(半分|1\/2|0\.5)/);
+      if (halfMatch) {
+        return { amount: 0.5, unitLabel: "半分" };
+      }
+
+      if (food.unit === "gram") return { amount: food.defaultAmount, unitLabel: `${food.defaultAmount}g` };
+      if (food.unit === "ml") return { amount: food.defaultAmount, unitLabel: `${food.defaultAmount}ml` };
+      return { amount: food.defaultAmount, unitLabel: `${food.defaultAmount}単位` };
+    }
+
+    function estimateMealNutrition(rawText) {
+      const text = String(rawText || "").trim();
+      if (!text) {
+        return { matched: false, cal: 0, protein: 0, summary: "" };
+      }
+
+      const parts = text.split(/[、・＋+]+/).map((s) => s.trim()).filter(Boolean);
+      let totalCal = 0;
+      let totalProtein = 0;
+      const details = [];
+
+      parts.forEach((part) => {
+        const matchedFood = FOOD_DICTIONARY.find((food) =>
+          Array.isArray(food.keywords) && food.keywords.some((kw) => part.includes(kw))
+        );
+        if (!matchedFood) return;
+
+        const q = extractQuantity(part, matchedFood);
+        const ratio = q.amount / matchedFood.baseAmount;
+        const partCal = Math.round(matchedFood.kcalPerBase * ratio);
+        const partProtein = Number((matchedFood.proteinPerBase * ratio).toFixed(1));
+
+        totalCal += partCal;
+        totalProtein = Number((totalProtein + partProtein).toFixed(1));
+        details.push(`${matchedFood.keywords[0]}(${q.amount}${matchedFood.unit === "gram" ? "g" : matchedFood.unit === "ml" ? "ml" : ""})：約${partCal}kcal`);
+      });
+
+      if (details.length === 0) {
+        return { matched: false, cal: 0, protein: 0, summary: "" };
+      }
+
+      return {
+        matched: true,
+        cal: totalCal,
+        protein: totalProtein,
+        summary: details.join(" / ")
+      };
+    }
+
+    function handleMealMenuInput() {
+      const menuVal = document.getElementById("mealMenu").value;
+      const calInput = document.getElementById("mealCal");
+      const proInput = document.getElementById("mealProtein");
+      const banner = document.getElementById("autoCalcBanner");
+
+      const est = estimateMealNutrition(menuVal);
+      if (est.matched) {
+        calInput.value = est.cal;
+        proInput.value = est.protein;
+        banner.innerHTML = `自動計算：<strong>約 ${est.cal.toLocaleString()} kcal</strong> / たんぱく質 <strong>${est.protein.toFixed(1)} g</strong>（${est.summary}）`;
+      } else if (!menuVal.trim()) {
+        banner.innerHTML = `食べたものを入力すると、<strong>カロリー・たんぱく質</strong>を自動計算して下の欄に反映します（手入力で調整もできます）。`;
+      } else {
+        banner.innerHTML = `辞書にない表記のため、<strong>カロリー・たんぱく質</strong>を直接入力してください（例：「ご飯 150g」「ハンバーグ」「カレー」などで自動計算します）。`;
+      }
+    }
+
+    function applyFoodPreset(presetText) {
+      const input = document.getElementById("mealMenu");
+      const current = input.value.trim();
+      input.value = current ? `${current}、${presetText}` : presetText;
+      handleMealMenuInput();
+    }
 
     const messages = [
       "ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨",
@@ -1024,7 +1179,6 @@
       const goalBf = Number(appState.goalBodyFat) || 28;
       const height = Number(appState.height) || 163;
 
-      // 1. 体脂肪率の目標と現在値
       document.getElementById("goalBodyFatHeader").textContent = `目標：体脂肪率 ${formatTrimNumber(goalBf)}%`;
       document.getElementById("currentBodyFatDisplay").textContent = `${formatTrimNumber(currentBf)}%`;
 
@@ -1038,7 +1192,6 @@
         : 100;
       document.getElementById("bfProgressFill").style.width = `${bfProgressPct}%`;
 
-      // 2. 左ボックス：体重と目標までの残り
       document.getElementById("currentWeightDisplay").textContent = `${formatTrimNumber(currentW)} kg`;
       const weightRemain = Math.max(0, currentW - goalW);
       document.getElementById("weightGoalLine").textContent =
@@ -1050,7 +1203,6 @@
         : 100;
       document.getElementById("weightMiniFill").style.width = `${weightProgressPct}%`;
 
-      // 3. 右ボックス：スタート情報と記録件数
       document.getElementById("startWeightDisplay").textContent = `${formatTrimNumber(startW)} kg`;
       const shortStartDate = formatShortDateWithDay(appState.startDate);
       document.getElementById("startMetaLine").textContent =
@@ -1058,7 +1210,6 @@
       document.getElementById("recordCountLine").textContent =
         `記録 ${appState.weightLogs.length} 件`;
 
-      // 成長バー（記録件数に応じて少しずつ伸びる）
       const growthPct = Math.min(100, Math.max(12, appState.weightLogs.length * 10));
       document.getElementById("growthProgressFill").style.width = `${growthPct}%`;
 
@@ -1101,7 +1252,6 @@
         appState.currentBodyFat = numBf;
       }
 
-      // 同じ日付の記録があれば上書き更新、なければ新規追加
       const existingIdx = appState.weightLogs.findIndex((item) => item.date === date);
       const entry = {
         date,
@@ -1127,9 +1277,18 @@
       e.preventDefault();
       const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
       const menu = document.getElementById("mealMenu").value.trim();
-      const cal = Number(document.getElementById("mealCal").value) || 0;
-      const protein = Number(document.getElementById("mealProtein").value) || 0;
+      let cal = Number(document.getElementById("mealCal").value) || 0;
+      let protein = Number(document.getElementById("mealProtein").value) || 0;
       const memo = document.getElementById("mealMemo").value.trim();
+
+      if (!cal && menu) {
+        const est = estimateMealNutrition(menu);
+        if (est.matched) {
+          cal = est.cal;
+          if (!protein) protein = est.protein;
+        }
+      }
+
       if (!menu && !cal && !protein) return;
 
       if (!Array.isArray(appState.mealLogsByDate[ymd])) {
@@ -1146,6 +1305,7 @@
       renderMealView();
       updateDailyCaloriesSummary();
       this.reset();
+      handleMealMenuInput();
     });
 
     document.getElementById("goalForm").addEventListener("submit", function (e) {
@@ -1260,1166 +1420,7 @@
       document.getElementById("mealDateInput").value = todayStr;
     }
 
-    loadState();
-    applyGoalInputsFromState();
-    updateClock();
-    setInterval(updateClock, 30000);
-    renderWeightHistory();
-    renderMealView();
-    refreshProgress();
-    syncTrainingFromSheet();
-  </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ダイエット応援ルーム</title>
-  <style>
-    :root {
-      --bg-page: #f8efe5;
-      --bg-card: #ffffff;
-      --bg-soft: #fdf7f0;
-      --bg-mint: #e8f2ec;
-      --bg-chip-active: #fde8e1;
-      --text-main: #4a3b32;
-      --text-sub: #8b776a;
-      --accent: #d95d39;
-      --accent-dark: #b94827;
-      --border: #eedfd0;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg-page);
-      color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
-      line-height: 1.5;
-    }
-
-    .app-wrap {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 16px 14px 72px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
-    }
-
-    /* お部屋ヘッダー */
-    .room-box {
-      width: 100%;
-      aspect-ratio: 16 / 8;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #ead9c6;
-      border: 1px solid var(--border);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .room-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .room-note {
-      font-size: 13px;
-      color: var(--text-sub);
-      text-align: center;
-      padding: 12px;
-    }
-
-    /* 時計・天気・摂取/消費カロリーカード */
-    .status-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 12px;
-    }
-
-    .period-badge {
-      background: var(--bg-chip-active);
-      color: var(--accent-dark);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .weather-text {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .clock-time {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      line-height: 1.1;
-    }
-
-    .clock-date {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .cal-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .cal-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 13px;
-    }
-
-    .day-tag {
-      background: var(--bg-chip-active);
-      color: var(--accent-dark);
-      border-radius: 999px;
-      padding: 2px 10px;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .cal-num {
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .cal-extra {
-      font-size: 12px;
-      color: var(--accent-dark);
-      font-weight: 600;
-    }
-
-    /* 応援吹き出しカード */
-    .speech-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .speech-title {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .speech-sub {
-      font-size: 11px;
-      color: var(--text-sub);
-    }
-
-    .speech-body {
-      font-size: 13px;
-      color: var(--text-main);
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
-    }
-
-    /* アイコン付き5列タブ */
-    .nav-tabs {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .tab-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px 4px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .tab-icon {
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .tab-btn.active {
-      background: var(--bg-chip-active);
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .section-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .ghost-btn {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 11px;
-      color: var(--text-main);
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background: #f2e6d9;
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 8px 0 10px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 36.4%;
-      background: var(--accent);
-      border-radius: 999px;
-      transition: width 0.25s ease;
-    }
-
-    .badge-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .badge {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 11px;
-    }
-
-    .badge.active-chip {
-      background: var(--bg-chip-active);
-      border-color: #f3c6b6;
-      color: var(--accent-dark);
-      font-weight: 600;
-    }
-
-    .rate-row {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .rate-big {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--accent);
-    }
-
-    .metric-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    @media (max-width: 520px) {
-      .metric-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .metric-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .metric-big {
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 520px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 4px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 9px 11px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      color: var(--text-main);
-      background: #fff;
-    }
-
-    .date-nav-bar {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .date-step-btn {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    .meal-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .meal-pill {
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--bg-soft);
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .meal-pill.active {
-      background: #4e7a61;
-      color: #fff;
-      border-color: #4e7a61;
-    }
-
-    .summary-pair {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .summary-box {
-      background: var(--bg-mint);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-dark);
-    }
-
-    .btn-secondary {
-      background: var(--bg-soft);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .training-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .training-stat-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-    }
-
-    .training-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .history-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 0;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-    }
-  </style>
-</head>
-<body>
-  <div class="app-wrap">
-    <!-- 1. お部屋ヘッダー -->
-    <section class="room-box" aria-label="お部屋">
-      <!-- お部屋画像ができたら src にパスやURLを入れてください -->
-      <!-- <img src="./images/room.png" alt="お部屋" /> -->
-      <div class="room-note">お部屋ヘッダーエリア（ここに部屋画像をセットします）</div>
-    </section>
-
-    <!-- 2. 時刻＆今日/昨日 摂取・消費カロリーカード -->
-    <section class="card" aria-label="時刻と摂取・消費カロリー">
-      <div class="status-top">
-        <span class="period-badge" id="timePeriodBadge">夜</span>
-        <span class="weather-text" id="weatherBadge">☀️ 晴れ</span>
-        <span class="clock-time" id="liveClock">--:--</span>
-        <span class="clock-date" id="liveDate">--月--日 (--)</span>
-      </div>
-      <div class="cal-rows">
-        <div class="cal-line">
-          <span class="day-tag">今日</span>
-          <span>摂取 <strong class="cal-num" id="todayIntakeText">--</strong></span>
-          <span>消費 <strong class="cal-num" id="todayBurnText">--</strong></span>
-          <span class="cal-extra" id="todayExerciseExtra"></span>
-        </div>
-        <div class="cal-line">
-          <span class="day-tag">昨日</span>
-          <span>摂取 <strong class="cal-num" id="yesterdayIntakeText">--</strong></span>
-          <span>消費 <strong class="cal-num" id="yesterdayBurnText">--</strong></span>
-          <span class="cal-extra" id="yesterdayExerciseExtra"></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. 応援メッセージカード -->
-    <section class="card" aria-label="応援メッセージ">
-      <div class="speech-header">
-        <span class="speech-title">✨ まったり過ごしてるよ</span>
-        <span class="speech-sub">ひできちさん応援ルーム</span>
-      </div>
-      <div class="speech-body" id="encouragementText">
-        ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨
-      </div>
-    </section>
-
-    <!-- 4. アイコン付き5列タブ -->
-    <nav class="nav-tabs" aria-label="メニュー">
-      <button type="button" class="tab-btn active" onclick="handleNavClick(this, 'growthCard')">
-        <span class="tab-icon">🎯</span>
-        <span>目標</span>
-      </button>
-      <button type="button" class="tab-btn" onclick="handleNavClick(this, 'weightCard')">
-        <span class="tab-icon">⚖️</span>
-        <span>体重</span>
-      </button>
-      <button type="button" class="tab-btn" onclick="handleNavClick(this, 'mealCard')">
-        <span class="tab-icon">🥗</span>
-        <span>食事</span>
-      </button>
-      <button type="button" class="tab-btn" onclick="handleNavClick(this, 'trainingCard')">
-        <span class="tab-icon">💪</span>
-        <span>筋トレ</span>
-      </button>
-      <button type="button" class="tab-btn" onclick="handleNavClick(this, 'goalCard')">
-        <span class="tab-icon">⚙️</span>
-        <span>設定</span>
-      </button>
-    </nav>
-
-    <!-- 5. ひできち成長＆進捗 -->
-    <section class="card" id="growthCard">
-      <div class="section-top">
-        <h2 class="section-title">ひできち成長</h2>
-        <button type="button" class="ghost-btn" onclick="cycleEncouragement()">💬 おしゃべり</button>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div style="font-size:13px; color:var(--text-sub);">記録を積み重ねて、少しずつステップアップしていきましょう🌱</div>
-      <div class="badge-list">
-        <span class="badge active-chip">✓ バッジあり</span>
-        <span class="badge active-chip">✓ 継続記録</span>
-        <span class="badge">トロフィー</span>
-      </div>
-
-      <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;" />
-
-      <div style="font-size:12px; color:var(--text-sub);">目標：体重減量＆体型キープ</div>
-      <div class="rate-row">
-        <span class="rate-big" id="achievementRateText">0.0%</span>
-        <span style="font-size:12px; color:var(--text-sub);">現在の目標達成率</span>
-      </div>
-
-      <div class="metric-row">
-        <div class="metric-box">
-          <div style="font-size:12px; color:var(--text-sub);">体重</div>
-          <div class="metric-big" id="currentWeightDisplay">60.3 kg</div>
-          <div style="font-size:12px; color:var(--text-sub);" id="startWeightNote">スタート 61.0 kg</div>
-        </div>
-        <div class="metric-box">
-          <div style="font-size:12px; color:var(--text-sub);">目標体重</div>
-          <div class="metric-big" id="targetWeightDisplay">53.4 kg</div>
-          <div style="font-size:12px; color:var(--text-sub);" id="bodyFatGoalNote">体脂肪率 27% → 25%</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. 体重・体脂肪率 -->
-    <section class="card" id="weightCard">
-      <h2 class="section-title" style="margin-bottom:12px;">体重・体脂肪率</h2>
-      <form id="weightForm" class="form-grid">
-        <div>
-          <label for="weightDate">日付</label>
-          <input type="date" id="weightDate" value="2026-11-23" />
-        </div>
-        <div>
-          <label for="weightInput">体重 (kg)</label>
-          <input type="number" step="0.1" id="weightInput" placeholder="60.3" />
-        </div>
-        <div>
-          <label for="bodyFatInput">体脂肪率 (%)</label>
-          <input type="number" step="0.1" id="bodyFatInput" placeholder="27.0" />
-        </div>
-        <div>
-          <label for="weightMemo">メモ</label>
-          <input type="text" id="weightMemo" placeholder="朝の記録・体調など" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <button type="submit" class="btn-primary">記録する</button>
-        </div>
-      </form>
-      <div id="weightHistory" style="margin-top:14px;"></div>
-    </section>
-
-    <!-- 7. 食事記録 -->
-    <section class="card" id="mealCard">
-      <h2 class="section-title" style="margin-bottom:12px;">食事記録</h2>
-      <div class="date-nav-bar">
-        <button type="button" class="date-step-btn" onclick="stepMealDate(-1)">← 前日</button>
-        <input type="date" id="mealDateInput" value="2026-11-23" onchange="renderMealView()" />
-        <button type="button" class="date-step-btn" onclick="stepMealDate(1)">翌日 →</button>
-      </div>
-      <div class="summary-pair">
-        <div class="summary-box">選択日の摂取カロリー<br /><strong id="mealTotalCal">-- kcal</strong></div>
-        <div class="summary-box">たんぱく質<br /><strong id="mealTotalProtein">-- g</strong></div>
-      </div>
-      <div class="meal-pills" id="mealPills">
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '朝食')">朝食</button>
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '昼食')">昼食</button>
-        <button type="button" class="meal-pill active" onclick="selectMeal(this, '夕食')">夕食</button>
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '間食')">間食</button>
-      </div>
-      <form id="mealForm" class="form-grid">
-        <div style="grid-column: 1 / -1;">
-          <label for="mealMenu">メニュー</label>
-          <input type="text" id="mealMenu" placeholder="ご飯、味噌汁、焼き魚 など" />
-        </div>
-        <div>
-          <label for="mealCal">カロリー (kcal)</label>
-          <input type="number" id="mealCal" placeholder="450" />
-        </div>
-        <div>
-          <label for="mealProtein">たんぱく質 (g)</label>
-          <input type="number" step="0.1" id="mealProtein" placeholder="22" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <label for="mealMemo">メモ</label>
-          <input type="text" id="mealMemo" placeholder="外食・自炊など" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <button type="submit" class="btn-primary">追加する</button>
-        </div>
-      </form>
-      <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);"></div>
-    </section>
-
-    <!-- 8. トレーニング記録（スプシ連携） -->
-    <section class="card" id="trainingCard">
-      <div class="section-top">
-        <h2 class="section-title">トレーニング記録</h2>
-        <span id="workoutSyncStatus" style="font-size:12px; color:var(--text-sub);">未同期</span>
-      </div>
-
-      <div class="training-stats" id="workoutStatsBoxes">
-        <div class="training-stat-box">
-          <div style="font-size:11px; color:var(--text-sub);">セッション</div>
-          <div style="font-size:20px; font-weight:700;">-- 回</div>
-        </div>
-        <div class="training-stat-box">
-          <div style="font-size:11px; color:var(--text-sub);">運動日数</div>
-          <div style="font-size:20px; font-weight:700;">-- 日</div>
-        </div>
-        <div class="training-stat-box">
-          <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
-          <div style="font-size:20px; font-weight:700;">-- kg</div>
-        </div>
-      </div>
-
-      <div class="training-actions">
-        <button type="button" class="btn-primary" onclick="syncTrainingFromSheet()">スプシから更新</button>
-        <a class="btn-secondary" href="https://docs.google.com/spreadsheets/d/1LyIf7dqQBvAgy6dp4pNgN-8BHa41zE-cZ-AsHj6yngw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
-          スプレッドシートを開く
-        </a>
-      </div>
-
-      <div id="workoutHistoryList">
-        <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
-      </div>
-    </section>
-
-    <!-- 9. 目標設定 -->
-    <section class="card" id="goalCard">
-      <h2 class="section-title" style="margin-bottom:12px;">目標設定</h2>
-      <form id="goalForm" class="form-grid">
-        <div>
-          <label for="heightInput">身長 (cm)</label>
-          <input type="number" id="heightInput" value="162" />
-        </div>
-        <div>
-          <label for="muscleMassInput">筋肉量 (kg)</label>
-          <input type="number" step="0.1" id="muscleMassInput" placeholder="例: 40.0" />
-        </div>
-        <div>
-          <label for="startDateInput">スタート日</label>
-          <input type="date" id="startDateInput" value="2026-11-19" />
-        </div>
-        <div>
-          <label for="startWeightInput">スタート体重 (kg)</label>
-          <input type="number" step="0.1" id="startWeightInput" value="61.0" />
-        </div>
-        <div>
-          <label for="startBodyFatInput">スタート体脂肪率 (%)</label>
-          <input type="number" step="0.1" id="startBodyFatInput" value="27.0" />
-        </div>
-        <div>
-          <label for="goalBodyFatInput">目標体脂肪率 (%)</label>
-          <input type="number" step="0.1" id="goalBodyFatInput" value="25.0" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <label for="goalWeightInput">目標体重 (kg)</label>
-          <input type="number" step="0.1" id="goalWeightInput" value="53.4" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <button type="submit" class="btn-primary">目標を保存</button>
-        </div>
-      </form>
-    </section>
-  </div>
-
-  <script>
-    const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
-    const STORAGE_KEY = "diet_room_state_v1";
-
-    const messages = [
-      "ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨",
-      "お部屋でまったりひと休み中🐑 記録を続けていてとっても素敵ですよ！",
-      "少しずつでも前に進んでいれば大成功🌱 今日もいい調子ですね！"
-    ];
-    let msgIndex = 0;
-
-    let selectedMealType = "夕食";
-    let workoutHistory = [];
-
-    let appState = {
-      currentWeight: 60.3,
-      height: 162,
-      muscleMass: 0,
-      startDate: "2026-11-19",
-      startWeight: 61.0,
-      startBodyFat: 27.0,
-      goalBodyFat: 25.0,
-      goalWeight: 53.4,
-      weightLogs: [],
-      mealLogsByDate: {}
-    };
-
-    function formatLocalYmd(dateObj) {
-      const yyyy = dateObj.getFullYear();
-      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const dd = String(dateObj.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      } catch (e) {}
-    }
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        appState = Object.assign({}, appState, parsed);
-      } catch (e) {}
-    }
-
-    function getPeriodLabel(hour) {
-      if (hour >= 5 && hour < 11) return "朝";
-      if (hour >= 11 && hour < 17) return "昼";
-      if (hour >= 17 && hour < 21) return "夕方";
-      return "夜";
-    }
-
-    function updateClock() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const mo = now.getMonth() + 1;
-      const dd = now.getDate();
-      const days = ["日", "月", "火", "水", "木", "金", "土"];
-      const w = days[now.getDay()];
-
-      document.getElementById("timePeriodBadge").textContent = getPeriodLabel(now.getHours());
-      document.getElementById("liveClock").textContent = `${hh}:${mm}`;
-      document.getElementById("liveDate").textContent = `${mo}月${dd}日 (${w})`;
-    }
-
-    function cycleEncouragement() {
-      msgIndex = (msgIndex + 1) % messages.length;
-      document.getElementById("encouragementText").textContent = messages[msgIndex];
-    }
-
-    function handleNavClick(btn, id) {
-      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function calcBmr() {
-      const weight = Number(appState.currentWeight) || 60;
-      const height = Number(appState.height) || 162;
-      const muscle = Number(appState.muscleMass) || 0;
-
-      // 体重・身長ベースの目安に、筋肉量入力がある場合は筋肉量比率を加味
-      const baseFromWeightHeight = 10 * weight + 6.25 * height - 5 * 46 - 161;
-      if (muscle > 0) {
-        const muscleEstimatedBmr = 370 + 21.6 * muscle;
-        return Math.round((baseFromWeightHeight + muscleEstimatedBmr) / 2);
-      }
-      return Math.round(Math.max(900, baseFromWeightHeight));
-    }
-
-    function calcItemVolume(item) {
-      if (item.memo && String(item.memo).includes("kg×")) {
-        const matches = [...String(item.memo).matchAll(/([\d.]+)kg×(\d+)/g)];
-        if (matches.length > 0) {
-          return matches.reduce((sum, m) => sum + (Number(m[1]) || 0) * (Number(m[2]) || 0), 0);
-        }
-      }
-      const w = Number(item.weight) || 0;
-      const r = Number(item.reps) || 0;
-      const s = Number(item.sets) || 1;
-      return w * r * s;
-    }
-
-    function calcSingleWorkoutCalories(item) {
-      if (Number(item.calories) > 0) {
-        return Number(item.calories);
-      }
-      const memoStr = String(item.memo || "");
-      const kcalMatch = memoStr.match(/([\d.]+)\s*kcal/i);
-      if (kcalMatch) {
-        return Number(kcalMatch[1]) || 0;
-      }
-
-      const exName = String(item.exercise || "");
-      const minutes = Number(item.time) || Number(item.reps) || 0;
-      if (exName.includes("通勤") || exName.includes("ウォーキング") || exName.includes("有酸素") || exName.includes("AMT") || exName.includes("ZUMBA")) {
-        const mins = minutes > 0 ? minutes : 30;
-        return Math.round(mins * 4.5);
-      }
-
-      const vol = calcItemVolume(item);
-      if (vol > 0) {
-        return Math.round(vol * 0.05);
-      }
-      return 30;
-    }
-
-    function normalizeDateKey(rawDate) {
-      const str = String(rawDate || "").trim();
-      const match = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-      if (!match) return "";
-      const y = match[1];
-      const m = String(match[2]).padStart(2, "0");
-      const d = String(match[3]).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
-
-    function getExerciseBurnForDate(ymd) {
-      let burn = 0;
-      workoutHistory.forEach((item) => {
-        if (normalizeDateKey(item.date) === ymd) {
-          burn += calcSingleWorkoutCalories(item);
-        }
-      });
-      return burn;
-    }
-
-    function getMealSumForDate(ymd) {
-      const list = Array.isArray(appState.mealLogsByDate[ymd]) ? appState.mealLogsByDate[ymd] : [];
-      let cal = 0;
-      let protein = 0;
-      let hasAny = list.length > 0;
-      list.forEach((m) => {
-        cal += Number(m.cal) || 0;
-        protein += Number(m.protein) || 0;
-      });
-      return { cal, protein, hasAny, list };
-    }
-
-    function updateDailyCaloriesSummary() {
-      const now = new Date();
-      const todayYmd = formatLocalYmd(now);
-      const yesterdayDate = new Date(now);
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-      const yesterdayYmd = formatLocalYmd(yesterdayDate);
-
-      const bmr = calcBmr();
-
-      const todayMeal = getMealSumForDate(todayYmd);
-      const todayExBurn = getExerciseBurnForDate(todayYmd);
-      const todayTotalBurn = bmr + todayExBurn;
-
-      document.getElementById("todayIntakeText").textContent = todayMeal.hasAny
-        ? `${todayMeal.cal.toLocaleString()} kcal`
-        : "--";
-      document.getElementById("todayBurnText").textContent = `約${todayTotalBurn.toLocaleString()} kcal`;
-      document.getElementById("todayExerciseExtra").textContent = todayExBurn > 0
-        ? `（運動 +${todayExBurn.toLocaleString()} kcal）`
-        : "";
-
-      const yesterdayMeal = getMealSumForDate(yesterdayYmd);
-      const yesterdayExBurn = getExerciseBurnForDate(yesterdayYmd);
-      const yesterdayTotalBurn = bmr + yesterdayExBurn;
-
-      document.getElementById("yesterdayIntakeText").textContent = yesterdayMeal.hasAny
-        ? `${yesterdayMeal.cal.toLocaleString()} kcal`
-        : "--";
-      document.getElementById("yesterdayBurnText").textContent = `約${yesterdayTotalBurn.toLocaleString()} kcal`;
-      document.getElementById("yesterdayExerciseExtra").textContent = yesterdayExBurn > 0
-        ? `（運動 +${yesterdayExBurn.toLocaleString()} kcal）`
-        : "";
-    }
-
-    function stepMealDate(offsetDays) {
-      const input = document.getElementById("mealDateInput");
-      const base = input.value ? new Date(input.value + "T00:00:00") : new Date();
-      base.setDate(base.getDate() + offsetDays);
-      input.value = formatLocalYmd(base);
-      renderMealView();
-    }
-
-    function selectMeal(btn, label) {
-      selectedMealType = label;
-      document.querySelectorAll(".meal-pill").forEach((el) => el.classList.remove("active"));
-      btn.classList.add("active");
-    }
-
-    function renderMealView() {
-      const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
-      const { cal, protein, hasAny, list } = getMealSumForDate(ymd);
-
-      document.getElementById("mealTotalCal").textContent = hasAny
-        ? `${cal.toLocaleString()} kcal`
-        : "-- kcal";
-      document.getElementById("mealTotalProtein").textContent = hasAny
-        ? `${protein.toFixed(1)} g`
-        : "-- g";
-
-      const listEl = document.getElementById("mealList");
-      if (!hasAny) {
-        listEl.textContent = "この日の食事記録はまだありません。";
-        return;
-      }
-
-      listEl.innerHTML = [...list].reverse().map((item) => {
-        const subText = [
-          item.cal ? `${Number(item.cal).toLocaleString()} kcal` : "",
-          item.protein ? `P ${Number(item.protein).toFixed(1)}g` : "",
-          item.memo || ""
-        ].filter(Boolean).join(" / ");
-        return `
-          <div class="history-item">
-            <span><strong>[${item.mealType}]</strong> ${item.menu || "食事"}</span>
-            <span style="color:var(--text-sub); text-align:right;">${subText}</span>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function refreshProgress() {
-      const currentW = Number(appState.currentWeight) || 60.3;
-      const startW = Number(appState.startWeight) || 61.0;
-      const goalW = Number(appState.goalWeight) || 53.4;
-      const startBf = Number(appState.startBodyFat) || 27.0;
-      const goalBf = Number(appState.goalBodyFat) || 25.0;
-
-      document.getElementById("currentWeightDisplay").textContent = `${currentW.toFixed(1)} kg`;
-      document.getElementById("startWeightNote").textContent = `スタート ${startW.toFixed(1)} kg`;
-      document.getElementById("targetWeightDisplay").textContent = `${goalW.toFixed(1)} kg`;
-      document.getElementById("bodyFatGoalNote").textContent = `体脂肪率 ${startBf}% → ${goalBf}%`;
-
-      const totalDiff = startW - goalW;
-      const lostDiff = startW - currentW;
-      if (totalDiff > 0) {
-        const rate = Math.max(0, Math.min(100, (lostDiff / totalDiff) * 100));
-        document.getElementById("achievementRateText").textContent = `${rate.toFixed(1)}%`;
-        document.getElementById("progressFill").style.width = `${rate}%`;
-      }
-      updateDailyCaloriesSummary();
-    }
-
-    function renderWeightHistory() {
-      const listEl = document.getElementById("weightHistory");
-      if (!appState.weightLogs.length) {
-        listEl.innerHTML = `<div style="font-size:13px; color:var(--text-sub);">まだ体重記録がありません。</div>`;
-        return;
-      }
-      listEl.innerHTML = [...appState.weightLogs].reverse().map((row) => {
-        const shortDate = row.date ? row.date.slice(5).replace("-", "/") : "";
-        const bfText = row.bodyFat ? ` / ${Number(row.bodyFat).toFixed(1)}%` : "";
-        return `
-          <div class="history-item">
-            <span><strong>${shortDate}</strong> ${Number(row.weight).toFixed(1)} kg${bfText}</span>
-            <span style="color:var(--text-sub);">${row.memo || "記録済み"}</span>
-          </div>
-        `;
-      }).join("");
-    }
-
-    document.getElementById("weightForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const date = document.getElementById("weightDate").value || formatLocalYmd(new Date());
-      const w = document.getElementById("weightInput").value;
-      const bf = document.getElementById("bodyFatInput").value;
-      const memo = document.getElementById("weightMemo").value;
-      if (!w) return;
-
-      const numW = Number(w);
-      appState.currentWeight = numW;
-      appState.weightLogs.push({
-        date,
-        weight: numW,
-        bodyFat: bf ? Number(bf) : null,
-        memo: memo.trim()
-      });
-      saveState();
-      renderWeightHistory();
-      refreshProgress();
-
-      this.reset();
-      document.getElementById("weightDate").value = date;
-    });
-
-    document.getElementById("mealForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
-      const menu = document.getElementById("mealMenu").value.trim();
-      const cal = Number(document.getElementById("mealCal").value) || 0;
-      const protein = Number(document.getElementById("mealProtein").value) || 0;
-      const memo = document.getElementById("mealMemo").value.trim();
-      if (!menu && !cal && !protein) return;
-
-      if (!Array.isArray(appState.mealLogsByDate[ymd])) {
-        appState.mealLogsByDate[ymd] = [];
-      }
-      appState.mealLogsByDate[ymd].push({
-        mealType: selectedMealType,
-        menu,
-        cal,
-        protein,
-        memo
-      });
-      saveState();
-      renderMealView();
-      updateDailyCaloriesSummary();
-      this.reset();
-    });
-
-    document.getElementById("goalForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      appState.height = Number(document.getElementById("heightInput").value) || 162;
-      appState.muscleMass = Number(document.getElementById("muscleMassInput").value) || 0;
-      appState.startDate = document.getElementById("startDateInput").value || "2026-11-19";
-      appState.startWeight = Number(document.getElementById("startWeightInput").value) || 61.0;
-      appState.startBodyFat = Number(document.getElementById("startBodyFatInput").value) || 27.0;
-      appState.goalBodyFat = Number(document.getElementById("goalBodyFatInput").value) || 25.0;
-      appState.goalWeight = Number(document.getElementById("goalWeightInput").value) || 53.4;
-      saveState();
-      refreshProgress();
-      alert("目標を保存しました！");
-    });
-
-    function formatWorkoutDetail(item) {
-      const burn = calcSingleWorkoutCalories(item);
-      const burnLabel = burn > 0 ? `（消費 約${burn} kcal）` : "";
-      if (item.memo && String(item.memo).includes("kg×")) {
-        return `${item.memo} ${burnLabel}`;
-      }
-      return `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set) ${burnLabel}`;
-    }
-
-    async function syncTrainingFromSheet() {
-      const statusEl = document.getElementById("workoutSyncStatus");
-      const statsEl = document.getElementById("workoutStatsBoxes");
-      const listEl = document.getElementById("workoutHistoryList");
-
-      if (!WORKOUT_GAS_URL || WORKOUT_GAS_URL.startsWith("ここに")) {
-        if (statusEl) statusEl.textContent = "GASのURL未設定";
-        return;
-      }
-
-      if (statusEl) statusEl.textContent = "読み込み中...";
-
-      try {
-        const res = await fetch(`${WORKOUT_GAS_URL}?action=init`);
-        const data = await res.json();
-        if (data.status === "error") {
-          throw new Error(data.message || "GAS error");
-        }
-
-        const history = Array.isArray(data.history) ? data.history : [];
-        workoutHistory = history;
-
-        const sessionCount = history.length;
-        const dateSet = new Set();
-        let totalVolume = 0;
-
-        history.forEach((item) => {
-          totalVolume += calcItemVolume(item);
-          const normDate = normalizeDateKey(item.date);
-          if (normDate) dateSet.add(normDate);
-        });
-
-        if (statsEl) {
-          statsEl.innerHTML = `
-            <div class="training-stat-box">
-              <div style="font-size:11px; color:var(--text-sub);">セッション</div>
-              <div style="font-size:20px; font-weight:700;">${sessionCount} 回</div>
-            </div>
-            <div class="training-stat-box">
-              <div style="font-size:11px; color:var(--text-sub);">運動日数</div>
-              <div style="font-size:20px; font-weight:700;">${dateSet.size} 日</div>
-            </div>
-            <div class="training-stat-box">
-              <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
-              <div style="font-size:20px; font-weight:700;">${Math.round(totalVolume).toLocaleString()} kg</div>
-            </div>
-          `;
-        }
-
-        if (listEl) {
-          if (history.length === 0) {
-            listEl.innerHTML = `<div style="font-size:13px; color:var(--text-sub);">記録シートにまだデータがありません。</div>`;
-          } else {
-            const recent = [...history].reverse().slice(0, 10);
-            listEl.innerHTML = recent.map((item) => {
-              const shortDate = item.date ? String(item.date).slice(5) : "";
-              const loc = item.location ? `${item.location}・` : "";
-              const detail = formatWorkoutDetail(item);
-              return `
-                <div class="history-item">
-                  <span><strong>${shortDate}</strong> ${loc}${item.exercise || ""}</span>
-                  <span style="color:var(--text-sub); text-align:right;">${detail}</span>
-                </div>
-              `;
-            }).join("");
-          }
-        }
-
-        updateDailyCaloriesSummary();
-        if (statusEl) statusEl.textContent = "同期完了";
-      } catch (err) {
-        if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
-      }
-    }
-
-    function applyGoalInputsFromState() {
-      document.getElementById("heightInput").value = appState.height;
-      document.getElementById("muscleMassInput").value = appState.muscleMass || "";
-      document.getElementById("startDateInput").value = appState.startDate;
-      document.getElementById("startWeightInput").value = appState.startWeight;
-      document.getElementById("startBodyFatInput").value = appState.startBodyFat;
-      document.getElementById("goalBodyFatInput").value = appState.goalBodyFat;
-      document.getElementById("goalWeightInput").value = appState.goalWeight;
-
-      const todayStr = formatLocalYmd(new Date());
-      document.getElementById("weightDate").value = todayStr;
-      document.getElementById("mealDateInput").value = todayStr;
-    }
-
+    loadFoodDictionary();
     loadState();
     applyGoalInputsFromState();
     updateClock();
