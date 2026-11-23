@@ -1,1 +1,76 @@
-<h1>ダイエットアプリ</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ダイエット応援ルーム</title>
+  <style>
+    :root {
+      --bg-page: #f7efe6;
+      --bg-card: #ffffff;
+      --text-main: #3f332b;
+      --accent: #d95d39;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+
+    .app-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .room-header {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #efe3d5;
+      box-shadow: 0 8px 24px rgba(63, 51, 43, 0.08);
+    }
+
+    .room-header svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <main class="app-container">
+    <section class="room-header" aria-label="お部屋">
+      <svg viewBox="0 0 800 450" role="img" aria-label="温かみのあるミニチュアルーム">
+        <rect width="800" height="450" fill="#f3e4d3" />
+        <rect x="0" y="310" width="800" height="140" fill="#dfc4a5" />
+        <rect x="90" y="75" width="160" height="130" rx="14" fill="#fffaf2" stroke="#c89f78" stroke-width="8" />
+        <line x1="170" y1="75" x2="170" y2="205" stroke="#c89f78" stroke-width="6" />
+        <line x1="90" y1="140" x2="250" y2="140" stroke="#c89f78" stroke-width="6" />
+        <circle cx="330" cy="285" r="46" fill="#ffffff" stroke="#d8c3ad" stroke-width="5" />
+        <circle cx="314" cy="274" r="7" fill="#3f332b" />
+        <circle cx="346" cy="274" r="7" fill="#3f332b" />
+        <circle cx="314" cy="274" r="14" fill="none" stroke="#3f332b" stroke-width="3" />
+        <circle cx="346" cy="274" r="14" fill="none" stroke="#3f332b" stroke-width="3" />
+        <line x1="328" y1="274" x2="332" y2="274" stroke="#3f332b" stroke-width="3" />
+        <path d="M322 292 Q330 299 338 292" fill="none" stroke="#3f332b" stroke-width="3" stroke-linecap="round" />
+        <circle cx="470" cy="278" r="54" fill="#fff8ee" stroke="#d6bea4" stroke-width="5" />
+        <circle cx="426" cy="242" r="16" fill="#fff8ee" stroke="#d6bea4" stroke-width="4" />
+        <circle cx="514" cy="242" r="16" fill="#fff8ee" stroke="#d6bea4" stroke-width="4" />
+        <circle cx="454" cy="272" r="5" fill="#3f332b" />
+        <circle cx="486" cy="272" r="5" fill="#3f332b" />
+        <ellipse cx="470" cy="284" rx="7" ry="5" fill="#e58c73" />
+        <rect x="610" y="255" width="54" height="65" rx="10" fill="#c98a5b" />
+        <circle cx="637" cy="235" r="26" fill="#7c9a6e" />
+      </svg>
+    </section>
+  </main>
+</body>
+</html>
