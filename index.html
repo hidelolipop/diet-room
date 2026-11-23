@@ -6,10 +6,15 @@
   <title>ダイエット応援ルーム</title>
   <style>
     :root {
-      --bg-page: #f7efe6;
+      --bg-page: #f8efe5;
       --bg-card: #ffffff;
-      --text-main: #3f332b;
+      --bg-soft: #fdf7f0;
+      --bg-mint: #e8f2ec;
+      --text-main: #4a3b32;
+      --text-sub: #8b776a;
       --accent: #d95d39;
+      --accent-dark: #b94827;
+      --border: #eedfd0;
     }
 
     * {
@@ -21,56 +26,532 @@
       background: var(--bg-page);
       color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      line-height: 1.5;
     }
 
-    .app-container {
-      max-width: 680px;
+    .app-wrap {
+      max-width: 720px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 16px 14px 64px;
     }
 
-    .room-header {
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
+    }
+
+    .room-box {
       width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 20px;
+      aspect-ratio: 16 / 8;
+      border-radius: 18px;
       overflow: hidden;
-      background: #efe3d5;
-      box-shadow: 0 8px 24px rgba(63, 51, 43, 0.08);
+      background: #ead9c6;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .room-header svg {
+    .room-box img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
       display: block;
+    }
+
+    .room-note {
+      font-size: 13px;
+      color: var(--text-sub);
+      text-align: center;
+      padding: 12px;
+    }
+
+    .top-status-grid {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 560px) {
+      .top-status-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .clock-time {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .clock-date {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .mini-stat {
+      font-size: 12px;
+      color: var(--text-sub);
+      padding: 6px 0;
+      border-top: 1px dashed var(--border);
+    }
+
+    .speech-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .speech-body {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 560px) {
+      .nav-tabs {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #f2e6d9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 36%;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .badge {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .metric-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .metric-big {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 520px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+    }
+
+    .meal-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .meal-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .meal-pill.active {
+      background: #4e7a61;
+      color: #fff;
+      border-color: #4e7a61;
+    }
+
+    .summary-pair {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-box {
+      background: var(--bg-mint);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .training-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .training-stat-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
-  <main class="app-container">
-    <section class="room-header" aria-label="お部屋">
-      <svg viewBox="0 0 800 450" role="img" aria-label="温かみのあるミニチュアルーム">
-        <rect width="800" height="450" fill="#f3e4d3" />
-        <rect x="0" y="310" width="800" height="140" fill="#dfc4a5" />
-        <rect x="90" y="75" width="160" height="130" rx="14" fill="#fffaf2" stroke="#c89f78" stroke-width="8" />
-        <line x1="170" y1="75" x2="170" y2="205" stroke="#c89f78" stroke-width="6" />
-        <line x1="90" y1="140" x2="250" y2="140" stroke="#c89f78" stroke-width="6" />
-        <circle cx="330" cy="285" r="46" fill="#ffffff" stroke="#d8c3ad" stroke-width="5" />
-        <circle cx="314" cy="274" r="7" fill="#3f332b" />
-        <circle cx="346" cy="274" r="7" fill="#3f332b" />
-        <circle cx="314" cy="274" r="14" fill="none" stroke="#3f332b" stroke-width="3" />
-        <circle cx="346" cy="274" r="14" fill="none" stroke="#3f332b" stroke-width="3" />
-        <line x1="328" y1="274" x2="332" y2="274" stroke="#3f332b" stroke-width="3" />
-        <path d="M322 292 Q330 299 338 292" fill="none" stroke="#3f332b" stroke-width="3" stroke-linecap="round" />
-        <circle cx="470" cy="278" r="54" fill="#fff8ee" stroke="#d6bea4" stroke-width="5" />
-        <circle cx="426" cy="242" r="16" fill="#fff8ee" stroke="#d6bea4" stroke-width="4" />
-        <circle cx="514" cy="242" r="16" fill="#fff8ee" stroke="#d6bea4" stroke-width="4" />
-        <circle cx="454" cy="272" r="5" fill="#3f332b" />
-        <circle cx="486" cy="272" r="5" fill="#3f332b" />
-        <ellipse cx="470" cy="284" rx="7" ry="5" fill="#e58c73" />
-        <rect x="610" y="255" width="54" height="65" rx="10" fill="#c98a5b" />
-        <circle cx="637" cy="235" r="26" fill="#7c9a6e" />
-      </svg>
+  <div class="app-wrap">
+    <!-- 1. お部屋ヘッダー -->
+    <section class="room-box" aria-label="お部屋">
+      <!-- お部屋画像ができたら src にパスやURLを入れてください -->
+      <!-- <img src="./images/room.png" alt="お部屋" /> -->
+      <div class="room-note">お部屋ヘッダーエリア（ここに部屋画像をセットします）</div>
     </section>
-  </main>
+
+    <!-- 2. 時刻・サマリー＆応援吹き出し -->
+    <div class="top-status-grid">
+      <section class="card" style="margin-bottom:0;">
+        <div class="clock-time" id="liveClock">17:34</div>
+        <div class="clock-date" id="liveDate">2026/11/23 (月)</div>
+        <div class="mini-stat"><strong>今日</strong> 摂取 -- kcal</div>
+        <div class="mini-stat"><strong>昨日</strong> 摂取 1,275 kcal</div>
+      </section>
+
+      <section class="card" style="margin-bottom:0;">
+        <div class="speech-title">まったり過ごしてるよ</div>
+        <div class="speech-body">
+          ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨
+        </div>
+      </section>
+    </div>
+
+    <!-- 3. タブメニュー -->
+    <nav class="nav-tabs" aria-label="メニュー">
+      <button type="button" class="tab-btn active" onclick="scrollToId('growthCard')">目標</button>
+      <button type="button" class="tab-btn" onclick="scrollToId('weightCard')">体重</button>
+      <button type="button" class="tab-btn" onclick="scrollToId('mealCard')">食事</button>
+      <button type="button" class="tab-btn" onclick="scrollToId('trainingCard')">筋トレ</button>
+      <button type="button" class="tab-btn" onclick="scrollToId('goalCard')">設定</button>
+    </nav>
+
+    <!-- 4. ひできち成長＆進捗 -->
+    <section class="card" id="growthCard">
+      <h2 class="section-title">ひできち成長</h2>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <div style="font-size:13px; color:var(--text-sub);">記録を積み重ねて、少しずつステップアップしていきましょう🌱</div>
+      <div class="badge-list">
+        <span class="badge">✓ バッジあり</span>
+        <span class="badge">✓ 継続記録</span>
+        <span class="badge">トロフィー</span>
+      </div>
+
+      <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;" />
+
+      <div style="font-size:13px; color:var(--text-sub);">現在目標達成率</div>
+      <div class="metric-big" style="color:var(--accent);">36.4%</div>
+      <div class="metric-row">
+        <div class="metric-box">
+          <div style="font-size:12px; color:var(--text-sub);">体重</div>
+          <div class="metric-big" id="currentWeightDisplay">60.3 kg</div>
+          <div style="font-size:12px; color:var(--text-sub);">スタート 61.0 kg</div>
+        </div>
+        <div class="metric-box">
+          <div style="font-size:12px; color:var(--text-sub);">目標体重</div>
+          <div class="metric-big" id="targetWeightDisplay">53.4 kg</div>
+          <div style="font-size:12px; color:var(--text-sub);">体脂肪率 27% → 25%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 体重・体脂肪率 -->
+    <section class="card" id="weightCard">
+      <h2 class="section-title">体重・体脂肪率</h2>
+      <form id="weightForm" class="form-grid">
+        <div>
+          <label for="weightDate">日付</label>
+          <input type="date" id="weightDate" value="2026-11-23" />
+        </div>
+        <div>
+          <label for="weightInput">体重 (kg)</label>
+          <input type="number" step="0.1" id="weightInput" placeholder="60.3" />
+        </div>
+        <div>
+          <label for="bodyFatInput">体脂肪率 (%)</label>
+          <input type="number" step="0.1" id="bodyFatInput" placeholder="27.0" />
+        </div>
+        <div>
+          <label for="weightMemo">メモ</label>
+          <input type="text" id="weightMemo" placeholder="朝の記録・体調など" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <button type="submit" class="btn-primary">記録する</button>
+        </div>
+      </form>
+      <div id="weightHistory" style="margin-top:14px;">
+        <div class="history-item">
+          <span><strong>11/22 (日)</strong> 60.2 kg / 32.4%</span>
+          <span style="color:var(--text-sub);">記録済み</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 食事記録 -->
+    <section class="card" id="mealCard">
+      <h2 class="section-title">食事記録</h2>
+      <div class="meal-pills" id="mealPills">
+        <button type="button" class="meal-pill" onclick="selectMeal(this, '朝食')">朝食</button>
+        <button type="button" class="meal-pill" onclick="selectMeal(this, '昼食')">昼食</button>
+        <button type="button" class="meal-pill active" onclick="selectMeal(this, '夕食')">夕食</button>
+        <button type="button" class="meal-pill" onclick="selectMeal(this, '間食')">間食</button>
+      </div>
+      <div class="summary-pair">
+        <div class="summary-box">今日の摂取カロリー<br /><strong>-- kcal</strong></div>
+        <div class="summary-box">たんぱく質<br /><strong>-- g</strong></div>
+      </div>
+      <form id="mealForm" class="form-grid">
+        <div style="grid-column: 1 / -1;">
+          <label for="mealMenu">メニュー</label>
+          <input type="text" id="mealMenu" placeholder="ご飯、味噌汁、焼き魚 など" />
+        </div>
+        <div>
+          <label for="mealCal">カロリー (kcal)</label>
+          <input type="number" id="mealCal" placeholder="450" />
+        </div>
+        <div>
+          <label for="mealProtein">たんぱく質 (g)</label>
+          <input type="number" step="0.1" id="mealProtein" placeholder="22" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label for="mealMemo">メモ</label>
+          <input type="text" id="mealMemo" placeholder="外食・自炊など" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <button type="submit" class="btn-primary">追加する</button>
+        </div>
+      </form>
+      <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);">
+        まだ今日の食事記録はありません。
+      </div>
+    </section>
+
+    <!-- 7. トレーニング記録 -->
+    <section class="card" id="trainingCard">
+      <h2 class="section-title">トレーニング記録</h2>
+      <div class="training-stats">
+        <div class="training-stat-box">
+          <div style="font-size:11px; color:var(--text-sub);">セッション</div>
+          <div style="font-size:20px; font-weight:700;">1 回</div>
+        </div>
+        <div class="training-stat-box">
+          <div style="font-size:11px; color:var(--text-sub);">運動日数</div>
+          <div style="font-size:20px; font-weight:700;">1 日</div>
+        </div>
+        <div class="training-stat-box">
+          <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
+          <div style="font-size:20px; font-weight:700;">780 kg</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <span><strong>11/22 (日)</strong> ジム（シェイプパンプなど）</span>
+        <span style="color:var(--text-sub);">記録済み</span>
+      </div>
+    </section>
+
+    <!-- 8. 目標設定 -->
+    <section class="card" id="goalCard">
+      <h2 class="section-title">目標設定</h2>
+      <form id="goalForm" class="form-grid">
+        <div>
+          <label for="heightInput">身長 (cm)</label>
+          <input type="number" id="heightInput" value="162" />
+        </div>
+        <div>
+          <label for="startDateInput">スタート日</label>
+          <input type="date" id="startDateInput" value="2026-11-19" />
+        </div>
+        <div>
+          <label for="startWeightInput">スタート体重 (kg)</label>
+          <input type="number" step="0.1" id="startWeightInput" value="61.0" />
+        </div>
+        <div>
+          <label for="goalWeightInput">目標体重 (kg)</label>
+          <input type="number" step="0.1" id="goalWeightInput" value="53.4" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <button type="submit" class="btn-primary">目標を保存</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    function scrollToId(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function selectMeal(btn, label) {
+      document.querySelectorAll(".meal-pill").forEach((el) => el.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    document.getElementById("weightForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const date = document.getElementById("weightDate").value || "2026-11-23";
+      const w = document.getElementById("weightInput").value;
+      const bf = document.getElementById("bodyFatInput").value;
+      const memo = document.getElementById("weightMemo").value;
+      if (!w) return;
+
+      document.getElementById("currentWeightDisplay").textContent = `${Number(w).toFixed(1)} kg`;
+      const row = document.createElement("div");
+      row.className = "history-item";
+      row.innerHTML = `<span><strong>${date.slice(5).replace("-", "/")}</strong> ${Number(w).toFixed(1)} kg${bf ? ` / ${Number(bf).toFixed(1)}%` : ""}</span><span style="color:var(--text-sub);">${memo || "記録済み"}</span>`;
+      document.getElementById("weightHistory").prepend(row);
+      this.reset();
+      document.getElementById("weightDate").value = date;
+    });
+
+    document.getElementById("mealForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const menu = document.getElementById("mealMenu").value;
+      const cal = document.getElementById("mealCal").value;
+      const pro = document.getElementById("mealProtein").value;
+      if (!menu && !cal) return;
+
+      const list = document.getElementById("mealList");
+      if (list.textContent.includes("まだ今日の食事記録はありません")) {
+        list.textContent = "";
+      }
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML = `<span><strong>${menu || "食事"}</strong></span><span>${cal ? `${cal} kcal` : ""}${pro ? ` / P ${pro}g` : ""}</span>`;
+      list.prepend(item);
+      this.reset();
+    });
+
+    document.getElementById("goalForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const goalW = document.getElementById("goalWeightInput").value;
+      if (goalW) {
+        document.getElementById("targetWeightDisplay").textContent = `${Number(goalW).toFixed(1)} kg`;
+      }
+      alert("目標を更新しました！");
+    });
+  </script>
 </body>
 </html>
