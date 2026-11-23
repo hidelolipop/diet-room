@@ -452,7 +452,7 @@
       padding: 10px 12px;
       font-size: 12px;
       color: var(--text-sub);
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
     .auto-calc-banner strong {
@@ -673,7 +673,7 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事記録（foods.json連携・自動カロリー計算対応） -->
+    <!-- 7. 食事記録（foods.json自動計算＋手入力どちらでもOK） -->
     <section class="card" id="mealCard">
       <h2 class="section-title" style="margin-bottom:12px;">食事記録</h2>
       <div class="date-nav-bar">
@@ -703,21 +703,21 @@
 
       <form id="mealForm" class="form-grid">
         <div style="grid-column: 1 / -1;">
-          <label for="mealMenu">食べたもの（例：ご飯 150g、鶏むね肉 100g、ゆで卵 1個）</label>
-          <input type="text" id="mealMenu" placeholder="食べたものを入力すると自動でカロリー計算します" oninput="handleMealMenuInput()" />
+          <label for="mealMenu">食べたもの（自動計算したいときは食材・料理名を入力）</label>
+          <input type="text" id="mealMenu" placeholder="例：ご飯 150g、唐揚げ 3個（手入力でカロリーだけ入れることもOK）" oninput="handleMealMenuInput()" />
         </div>
 
         <div class="auto-calc-banner" id="autoCalcBanner" style="grid-column: 1 / -1;">
-          食べたものを入力すると、<strong>カロリー・たんぱく質</strong>を自動計算して下の欄に反映します（手入力で調整もできます）。
+          食べたものを入れると自動計算します。<strong>下のカロリー・たんぱく質はいつでも直接手入力できます！</strong>
         </div>
 
         <div>
-          <label for="mealCal">カロリー (kcal)</label>
-          <input type="number" id="mealCal" placeholder="自動計算されます" />
+          <label for="mealCal">カロリー (kcal)（手入力OK）</label>
+          <input type="number" id="mealCal" placeholder="例: 450" oninput="markManualNutritionEdit('cal')" />
         </div>
         <div>
-          <label for="mealProtein">たんぱく質 (g)</label>
-          <input type="number" step="0.1" id="mealProtein" placeholder="自動計算されます" />
+          <label for="mealProtein">たんぱく質 (g)（手入力OK）</label>
+          <input type="number" step="0.1" id="mealProtein" placeholder="例: 20.5" oninput="markManualNutritionEdit('protein')" />
         </div>
         <div style="grid-column: 1 / -1;">
           <label for="mealMemo">メモ</label>
@@ -808,6 +808,11 @@
     const STORAGE_KEY = "diet_room_state_v2";
 
     let FOOD_DICTIONARY = [];
+    let manualEdited = { cal: false, protein: false };
+
+    function markManualNutritionEdit(field) {
+      manualEdited[field] = true;
+    }
 
     async function loadFoodDictionary() {
       try {
@@ -894,15 +899,19 @@
       const proInput = document.getElementById("mealProtein");
       const banner = document.getElementById("autoCalcBanner");
 
+      if (!menuVal.trim()) {
+        manualEdited = { cal: false, protein: false };
+        banner.innerHTML = `食べたものを入れると自動計算します。<strong>下のカロリー・たんぱく質はいつでも直接手入力できます！</strong>`;
+        return;
+      }
+
       const est = estimateMealNutrition(menuVal);
       if (est.matched) {
-        calInput.value = est.cal;
-        proInput.value = est.protein;
-        banner.innerHTML = `自動計算：<strong>約 ${est.cal.toLocaleString()} kcal</strong> / たんぱく質 <strong>${est.protein.toFixed(1)} g</strong>（${est.summary}）`;
-      } else if (!menuVal.trim()) {
-        banner.innerHTML = `食べたものを入力すると、<strong>カロリー・たんぱく質</strong>を自動計算して下の欄に反映します（手入力で調整もできます）。`;
+        if (!manualEdited.cal) calInput.value = est.cal;
+        if (!manualEdited.protein) proInput.value = est.protein;
+        banner.innerHTML = `自動計算：<strong>約 ${est.cal.toLocaleString()} kcal</strong> / たんぱく質 <strong>${est.protein.toFixed(1)} g</strong>（${est.summary}）※下の欄で手直しもOK`;
       } else {
-        banner.innerHTML = `辞書にない表記のため、<strong>カロリー・たんぱく質</strong>を直接入力してください（例：「ご飯 150g」「ハンバーグ」「カレー」などで自動計算します）。`;
+        banner.innerHTML = `辞書にない表記のため、<strong>下のカロリー・たんぱく質欄に直接入力</strong>して追加してください。`;
       }
     }
 
@@ -910,6 +919,7 @@
       const input = document.getElementById("mealMenu");
       const current = input.value.trim();
       input.value = current ? `${current}、${presetText}` : presetText;
+      manualEdited = { cal: false, protein: false };
       handleMealMenuInput();
     }
 
@@ -1281,11 +1291,11 @@
       let protein = Number(document.getElementById("mealProtein").value) || 0;
       const memo = document.getElementById("mealMemo").value.trim();
 
-      if (!cal && menu) {
+      if (!cal && menu && !manualEdited.cal) {
         const est = estimateMealNutrition(menu);
         if (est.matched) {
           cal = est.cal;
-          if (!protein) protein = est.protein;
+          if (!protein && !manualEdited.protein) protein = est.protein;
         }
       }
 
@@ -1296,7 +1306,7 @@
       }
       appState.mealLogsByDate[ymd].push({
         mealType: selectedMealType,
-        menu,
+        menu: menu || "食事",
         cal,
         protein,
         memo
@@ -1305,6 +1315,7 @@
       renderMealView();
       updateDailyCaloriesSummary();
       this.reset();
+      manualEdited = { cal: false, protein: false };
       handleMealMenuInput();
     });
 
