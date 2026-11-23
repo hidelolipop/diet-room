@@ -44,7 +44,6 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー */
     .room-box {
       width: 100%;
       aspect-ratio: 16 / 8;
@@ -72,7 +71,6 @@
       padding: 12px;
     }
 
-    /* 時計＆応援吹き出し */
     .top-status-grid {
       display: grid;
       grid-template-columns: 160px 1fr;
@@ -116,7 +114,6 @@
       color: var(--text-main);
     }
 
-    /* ナビタブ */
     .nav-tabs {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -153,7 +150,6 @@
       margin: 0 0 12px;
     }
 
-    /* 進捗＆バッジ */
     .progress-bar {
       width: 100%;
       height: 10px;
@@ -211,7 +207,6 @@
       font-weight: 700;
     }
 
-    /* フォーム */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -293,7 +288,6 @@
       background: var(--accent-dark);
     }
 
-    /* トレーニング集計＆履歴 */
     .training-stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -470,23 +464,20 @@
       <div class="training-stats" id="workoutStatsBoxes">
         <div class="training-stat-box">
           <div style="font-size:11px; color:var(--text-sub);">セッション</div>
-          <div style="font-size:20px; font-weight:700;">1 回</div>
+          <div style="font-size:20px; font-weight:700;">-- 回</div>
         </div>
         <div class="training-stat-box">
           <div style="font-size:11px; color:var(--text-sub);">運動日数</div>
-          <div style="font-size:20px; font-weight:700;">1 日</div>
+          <div style="font-size:20px; font-weight:700;">-- 日</div>
         </div>
         <div class="training-stat-box">
           <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
-          <div style="font-size:20px; font-weight:700;">780 kg</div>
+          <div style="font-size:20px; font-weight:700;">-- kg</div>
         </div>
       </div>
 
       <div id="workoutHistoryList">
-        <div class="history-item">
-          <span><strong>11/22 (日)</strong> ジム（シェイプパンプなど）</span>
-          <span style="color:var(--text-sub);">記録済み</span>
-        </div>
+        <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
       </div>
     </section>
 
@@ -519,7 +510,7 @@
 
   <script>
     // ★ここに筋トレログ用GASのウェブアプリURL（https://script.google.com/macros/s/.../exec）を入れてください
-    const WORKOUT_GAS_URL = "ここにGASのデプロイURLを貼り付け";
+    const WORKOUT_GAS_URL = "https://docs.google.com/spreadsheets/d/1LyIf7dqQBvAgy6dp4pNgN-8BHa41zE-cZ-AsHj6yngw/edit?usp=sharing";
 
     let selectedMealType = "夕食";
     let totalMealCal = 0;
@@ -635,6 +626,13 @@
       return w * r * s;
     }
 
+    function formatWorkoutDetail(item) {
+      if (item.memo && String(item.memo).includes("kg×")) {
+        return String(item.memo);
+      }
+      return `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set)`;
+    }
+
     async function syncTrainingFromSheet() {
       const statusEl = document.getElementById("workoutSyncStatus");
       const statsEl = document.getElementById("workoutStatsBoxes");
@@ -691,11 +689,11 @@
             listEl.innerHTML = recent.map((item) => {
               const shortDate = item.date ? String(item.date).slice(5) : "";
               const loc = item.location ? `${item.location}・` : "";
-              const detail = `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set)`;
+              const detail = formatWorkoutDetail(item);
               return `
                 <div class="history-item">
                   <span><strong>${shortDate}</strong> ${loc}${item.exercise || ""}</span>
-                  <span style="color:var(--text-sub);">${detail}</span>
+                  <span style="color:var(--text-sub); text-align:right;">${detail}</span>
                 </div>
               `;
             }).join("");
@@ -711,6 +709,8 @@
     updateClock();
     setInterval(updateClock, 30000);
     refreshProgress();
+    // ページを開いたときに自動反映したい場合は下の行の // を外してください
+    // syncTrainingFromSheet();
   </script>
 </body>
 </html>
