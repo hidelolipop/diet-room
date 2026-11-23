@@ -46,7 +46,7 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー（gym_back.jpg + hide.gif & moko_cheer.gif 大きめ並び表示） */
+    /* お部屋ヘッダー（gym_back.jpg + hide.gif & moko_cheer.gif 大きめ並び表示・揺れなし） */
     .room-box {
       position: relative;
       width: 100%;
@@ -81,35 +81,15 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
-      border: 2px solid rgba(255, 255, 255, 0.85);
-      background: rgba(255, 255, 255, 0.22);
-    }
-
-    .char-stage.cheer-bounce {
-      animation: charCheerAnim 0.85s ease;
-    }
-
-    .char-stage:nth-child(2).cheer-bounce {
-      animation-delay: 0.08s;
-    }
-
-    @keyframes charCheerAnim {
-      0%   { transform: translateY(0) scale(1, 1); }
-      20%  { transform: translateY(-20px) scale(1.06, 0.96) rotate(-4deg); }
-      45%  { transform: translateY(0) scale(0.96, 1.04) rotate(4deg); }
-      65%  { transform: translateY(-11px) scale(1.03, 0.98) rotate(-2deg); }
-      85%  { transform: translateY(0) scale(0.99, 1.01) rotate(1deg); }
-      100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+      background: transparent;
     }
 
     .char-gif-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
+      background: transparent;
     }
 
     .room-tap-hint {
@@ -865,7 +845,7 @@
     const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
     const STORAGE_KEY = "diet_room_state_v2";
 
-    /* GIFアニメーションの停止＆タッチ再生制御 */
+    /* GIFアニメーションの停止＆タッチ再生制御（揺れなし） */
     const gifFreezeFrames = {
       hideGifImg: null,
       mokoGifImg: null
@@ -915,20 +895,9 @@
       }
     }
 
-    function bounceStage(stageId) {
-      const stage = document.getElementById(stageId);
-      if (!stage) return;
-      stage.classList.remove("cheer-bounce");
-      void stage.offsetWidth;
-      stage.classList.add("cheer-bounce");
-    }
-
     let gifStopTimer = null;
 
     function triggerCharactersCheer() {
-      bounceStage("hideStage");
-      bounceStage("mokoStage");
-
       const hideImg = document.getElementById("hideGifImg");
       const mokoImg = document.getElementById("mokoGifImg");
       const hint = document.getElementById("roomTapHint");
