@@ -46,32 +46,87 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー */
+    /* お部屋ヘッダー（gym_back.jpg + hide.gif & moko_cheer.gif 並び表示） */
     .room-box {
+      position: relative;
       width: 100%;
       aspect-ratio: 16 / 8;
       border-radius: 18px;
       overflow: hidden;
-      background: #ead9c6;
+      background: #ead9c6 url("./gym_back.jpg") center / cover no-repeat;
       border: 1px solid var(--border);
       margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .char-pair {
+      position: absolute;
+      left: 50%;
+      bottom: 2%;
+      transform: translateX(-50%);
       display: flex;
-      align-items: center;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .char-stage {
+      width: 155px;
+      max-width: 24vw;
+      min-width: 96px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: flex-end;
       justify-content: center;
     }
 
-    .room-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .char-stage.cheer-bounce {
+      animation: charCheerAnim 0.85s ease;
     }
 
-    .room-note {
-      font-size: 13px;
-      color: var(--text-sub);
-      text-align: center;
-      padding: 12px;
+    .char-stage:nth-child(2).cheer-bounce {
+      animation-delay: 0.08s;
+    }
+
+    @keyframes charCheerAnim {
+      0%   { transform: translateY(0) scale(1, 1); }
+      20%  { transform: translateY(-18px) scale(1.06, 0.96) rotate(-4deg); }
+      45%  { transform: translateY(0) scale(0.96, 1.04) rotate(4deg); }
+      65%  { transform: translateY(-10px) scale(1.03, 0.98) rotate(-2deg); }
+      85%  { transform: translateY(0) scale(0.99, 1.01) rotate(1deg); }
+      100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+    }
+
+    .char-source-img {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .char-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.28));
+    }
+
+    .room-tap-hint {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
     /* 時計・天気・摂取/消費カロリーカード */
@@ -538,11 +593,19 @@
 </head>
 <body>
   <div class="app-wrap">
-    <!-- 1. お部屋ヘッダー -->
-    <section class="room-box" aria-label="お部屋">
-      <!-- お部屋画像ができたら src にパスやURLを入れてください -->
-      <!-- <img src="./images/room.png" alt="お部屋" /> -->
-      <div class="room-note">お部屋ヘッダーエリア（ここに部屋画像をセットします）</div>
+    <!-- 1. お部屋ヘッダー（gym_back.jpg + 左にhide.gif、右にmoko_cheer.gif） -->
+    <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋（タッチで応援）" onclick="triggerCharactersCheer()">
+      <div class="char-pair">
+        <div class="char-stage" id="hideStage">
+          <img id="hideSourceImg" class="char-source-img" src="./hide.gif" alt="ヒデちゃん" crossorigin="anonymous" />
+          <canvas id="hideCanvas" class="char-canvas" width="320" height="320"></canvas>
+        </div>
+        <div class="char-stage" id="mokoStage">
+          <img id="mokoSourceImg" class="char-source-img" src="./moko_cheer.gif" alt="モコちゃん" crossorigin="anonymous" />
+          <canvas id="mokoCanvas" class="char-canvas" width="320" height="320"></canvas>
+        </div>
+      </div>
+      <span class="room-tap-hint">📣 タッチで応援！</span>
     </section>
 
     <!-- 2. 時刻＆今日/昨日 摂取・消費カロリーカード -->
@@ -569,7 +632,7 @@
       </div>
     </section>
 
-    <!-- 3. 応援メッセージカード -->
+    <!-- 3. 応援吹き出しカード -->
     <section class="card" aria-label="応援メッセージ">
       <div class="speech-header">
         <span class="speech-title">✨ まったり過ごしてるよ</span>
@@ -704,7 +767,7 @@
       <form id="mealForm" class="form-grid">
         <div style="grid-column: 1 / -1;">
           <label for="mealMenu">食べたもの（自動計算したいときは食材・料理名を入力）</label>
-          <input type="text" id="mealMenu" placeholder="例：ご飯 150g、唐揚げ 3個（手入力でカロリーだけ入れることもOK）" oninput="handleMealMenuInput()" />
+          <input type="text" id="mealMenu" placeholder="例：ご飯 150g、回鍋肉（手入力でカロリーだけ入れることもOK）" oninput="handleMealMenuInput()" />
         </div>
 
         <div class="auto-calc-banner" id="autoCalcBanner" style="grid-column: 1 / -1;">
@@ -806,6 +869,66 @@
   <script>
     const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
     const STORAGE_KEY = "diet_room_state_v2";
+
+    /* hide.gif & moko_cheer.gif の緑色背景をリアルタイム透過＆タッチ応援アニメーション */
+    function bindChromaKeyGif(imgId, canvasId) {
+      const img = document.getElementById(imgId);
+      const canvas = document.getElementById(canvasId);
+      if (!img || !canvas) return;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+      function renderFrame() {
+        if (img.complete && img.naturalWidth > 0) {
+          const w = canvas.width;
+          const h = canvas.height;
+          ctx.clearRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+
+          try {
+            const frame = ctx.getImageData(0, 0, w, h);
+            const data = frame.data;
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              if (g > 110 && g > r * 1.35 && g > b * 1.35) {
+                data[i + 3] = 0;
+              } else if (g > 90 && g > r * 1.18 && g > b * 1.18) {
+                const greenness = g - Math.max(r, b);
+                data[i + 3] = Math.max(0, Math.min(255, 255 - greenness * 4));
+              }
+            }
+            ctx.putImageData(frame, 0, 0);
+          } catch (e) {
+            // 読取制限時はそのまま描画
+          }
+        }
+        requestAnimationFrame(renderFrame);
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    function bounceStage(stageId) {
+      const stage = document.getElementById(stageId);
+      if (!stage) return;
+      stage.classList.remove("cheer-bounce");
+      void stage.offsetWidth;
+      stage.classList.add("cheer-bounce");
+    }
+
+    function triggerCharactersCheer() {
+      bounceStage("hideStage");
+      bounceStage("mokoStage");
+
+      const hideImg = document.getElementById("hideSourceImg");
+      const mokoImg = document.getElementById("mokoSourceImg");
+      const ts = Date.now();
+      if (hideImg) hideImg.src = "./hide.gif?t=" + ts;
+      if (mokoImg) mokoImg.src = "./moko_cheer.gif?t=" + ts;
+
+      cycleEncouragement();
+    }
 
     let FOOD_DICTIONARY = [];
     let manualEdited = { cal: false, protein: false };
@@ -925,7 +1048,7 @@
 
     const messages = [
       "ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨",
-      "お部屋でまったりひと休み中🐑 記録を続けていてとっても素敵ですよ！",
+      "ヒデちゃんもダンベルで気合十分💪 モコちゃんと一緒に応援してるよ📣🐑",
       "少しずつでも前に進んでいれば大成功🌱 今日もいい調子ですね！"
     ];
     let msgIndex = 0;
@@ -1431,6 +1554,8 @@
       document.getElementById("mealDateInput").value = todayStr;
     }
 
+    bindChromaKeyGif("hideSourceImg", "hideCanvas");
+    bindChromaKeyGif("mokoSourceImg", "mokoCanvas");
     loadFoodDictionary();
     loadState();
     applyGoalInputsFromState();
