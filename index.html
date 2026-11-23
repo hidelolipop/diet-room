@@ -46,7 +46,7 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー（gym_back.jpg + hide.gif & moko_cheer.gif 大きめ並び表示・揺れなし） */
+    /* お部屋ヘッダー（gym_back.jpg + 透過対応 hide.gif & moko_cheer.gif・揺れなし） */
     .room-box {
       position: relative;
       width: 100%;
@@ -90,6 +90,7 @@
       object-fit: contain;
       display: block;
       background: transparent;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
     }
 
     .room-tap-hint {
@@ -570,7 +571,7 @@
 </head>
 <body>
   <div class="app-wrap">
-    <!-- 1. お部屋ヘッダー（gym_back.jpg + 左にhide.gif、右にmoko_cheer.gif） -->
+    <!-- 1. お部屋ヘッダー（gym_back.jpg + 左にhide.gif、右にmoko_cheer.gif・揺れなし） -->
     <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋（タッチで応援）" onclick="triggerCharactersCheer()">
       <div class="char-pair">
         <div class="char-stage" id="hideStage">
@@ -580,7 +581,7 @@
           <img id="mokoGifImg" class="char-gif-img" src="./moko_cheer.gif" alt="モコちゃん" />
         </div>
       </div>
-      <span class="room-tap-hint" id="roomTapHint">📣 タッチでGIF再生＆応援！</span>
+      <span class="room-tap-hint" id="roomTapHint">📣 タッチで応援！</span>
     </section>
 
     <!-- 2. 時刻＆今日/昨日 摂取・消費カロリーカード -->
@@ -713,7 +714,10 @@
 
     <!-- 7. 食事記録（foods.json自動計算＋手入力どちらでもOK） -->
     <section class="card" id="mealCard">
-      <h2 class="section-title" style="margin-bottom:12px;">食事記録</h2>
+      <div class="section-top">
+        <h2 class="section-title">食事記録</h2>
+        <button type="button" class="ghost-btn" onclick="resetMealDateToToday()">📅 今日に戻す</button>
+      </div>
       <div class="date-nav-bar">
         <button type="button" class="date-step-btn" onclick="stepMealDate(-1)">← 前日</button>
         <input type="date" id="mealDateInput" value="2026-11-23" onchange="renderMealView()" />
@@ -845,76 +849,22 @@
     const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
     const STORAGE_KEY = "diet_room_state_v2";
 
-    /* GIFアニメーションの停止＆タッチ再生制御（揺れなし） */
-    const gifFreezeFrames = {
-      hideGifImg: null,
-      mokoGifImg: null
-    };
-
-    function captureGifFirstFrame(imgEl, key) {
-      if (!imgEl || !imgEl.complete || imgEl.naturalWidth === 0) return;
-      try {
-        const c = document.createElement("canvas");
-        c.width = imgEl.naturalWidth;
-        c.height = imgEl.naturalHeight;
-        const ctx = c.getContext("2d");
-        ctx.drawImage(imgEl, 0, 0);
-        gifFreezeFrames[key] = c.toDataURL("image/png");
-        imgEl.src = gifFreezeFrames[key];
-      } catch (e) {
-        // 読取制限時はそのままGIFを表示
-      }
-    }
-
-    function initGifFreezeOnLoad() {
-      const hideImg = document.getElementById("hideGifImg");
-      const mokoImg = document.getElementById("mokoGifImg");
-
-      if (hideImg) {
-        if (hideImg.complete && hideImg.naturalWidth > 0) {
-          captureGifFirstFrame(hideImg, "hideGifImg");
-        } else {
-          hideImg.addEventListener("load", () => {
-            if (!gifFreezeFrames.hideGifImg) {
-              captureGifFirstFrame(hideImg, "hideGifImg");
-            }
-          }, { once: true });
-        }
-      }
-
-      if (mokoImg) {
-        if (mokoImg.complete && mokoImg.naturalWidth > 0) {
-          captureGifFirstFrame(mokoImg, "mokoGifImg");
-        } else {
-          mokoImg.addEventListener("load", () => {
-            if (!gifFreezeFrames.mokoGifImg) {
-              captureGifFirstFrame(mokoImg, "mokoGifImg");
-            }
-          }, { once: true });
-        }
-      }
-    }
-
-    let gifStopTimer = null;
-
+    /* タッチ時にGIFを先頭から再生＆応援メッセージ更新（揺れなし） */
     function triggerCharactersCheer() {
       const hideImg = document.getElementById("hideGifImg");
       const mokoImg = document.getElementById("mokoGifImg");
       const hint = document.getElementById("roomTapHint");
       const ts = Date.now();
 
-      if (hideImg) hideImg.src = "./hide.gif?play=" + ts;
-      if (mokoImg) mokoImg.src = "./moko_cheer.gif?play=" + ts;
-      if (hint) hint.textContent = "🎉 応援モーション再生中！";
+      if (hideImg) hideImg.src = "./hide.gif?t=" + ts;
+      if (mokoImg) mokoImg.src = "./moko_cheer.gif?t=" + ts;
+      if (hint) hint.textContent = "🎉 応援中！";
 
       cycleEncouragement();
 
-      if (gifStopTimer) clearTimeout(gifStopTimer);
-      gifStopTimer = setTimeout(() => {
-        if (hideImg && gifFreezeFrames.hideGifImg) hideImg.src = gifFreezeFrames.hideGifImg;
-        if (mokoImg && gifFreezeFrames.mokoGifImg) mokoImg.src = gifFreezeFrames.mokoGifImg;
-        if (hint) hint.textContent = "📣 タッチでGIF再生＆応援！";
-      }, 3200);
+      setTimeout(() => {
+        if (hint) hint.textContent = "📣 タッチで応援！";
+      }, 2500);
     }
 
     let FOOD_DICTIONARY = [];
@@ -1092,6 +1042,9 @@
         if (!raw) return;
         const parsed = JSON.parse(raw);
         appState = Object.assign({}, appState, parsed);
+        if (!appState.mealLogsByDate || typeof appState.mealLogsByDate !== "object") {
+          appState.mealLogsByDate = {};
+        }
       } catch (e) {}
     }
 
@@ -1224,7 +1177,7 @@
       const todayTotalBurn = bmr + todayExBurn;
 
       document.getElementById("todayIntakeText").textContent = todayMeal.hasAny
-        ? `${todayMeal.cal.toLocaleString()} kcal`
+        ? `${Math.round(todayMeal.cal).toLocaleString()} kcal`
         : "--";
       document.getElementById("todayBurnText").textContent = `約${todayTotalBurn.toLocaleString()} kcal`;
       document.getElementById("todayExerciseExtra").textContent = todayExBurn > 0
@@ -1236,12 +1189,17 @@
       const yesterdayTotalBurn = bmr + yesterdayExBurn;
 
       document.getElementById("yesterdayIntakeText").textContent = yesterdayMeal.hasAny
-        ? `${yesterdayMeal.cal.toLocaleString()} kcal`
+        ? `${Math.round(yesterdayMeal.cal).toLocaleString()} kcal`
         : "--";
       document.getElementById("yesterdayBurnText").textContent = `約${yesterdayTotalBurn.toLocaleString()} kcal`;
       document.getElementById("yesterdayExerciseExtra").textContent = yesterdayExBurn > 0
         ? `（運動 +${yesterdayExBurn.toLocaleString()} kcal）`
         : "";
+    }
+
+    function resetMealDateToToday() {
+      document.getElementById("mealDateInput").value = formatLocalYmd(new Date());
+      renderMealView();
     }
 
     function stepMealDate(offsetDays) {
@@ -1263,7 +1221,7 @@
       const { cal, protein, hasAny, list } = getMealSumForDate(ymd);
 
       document.getElementById("mealTotalCal").textContent = hasAny
-        ? `${cal.toLocaleString()} kcal`
+        ? `${Math.round(cal).toLocaleString()} kcal`
         : "-- kcal";
       document.getElementById("mealTotalProtein").textContent = hasAny
         ? `${protein.toFixed(1)} g`
@@ -1541,7 +1499,6 @@
       document.getElementById("mealDateInput").value = todayStr;
     }
 
-    initGifFreezeOnLoad();
     loadFoodDictionary();
     loadState();
     applyGoalInputsFromState();
