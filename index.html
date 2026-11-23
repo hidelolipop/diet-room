@@ -509,8 +509,7 @@
   </div>
 
   <script>
-    // ★ここに筋トレログ用GASのウェブアプリURL（https://script.google.com/macros/s/.../exec）を入れてください
-    const WORKOUT_GAS_URL = "https://docs.google.com/spreadsheets/d/1LyIf7dqQBvAgy6dp4pNgN-8BHa41zE-cZ-AsHj6yngw/edit?usp=sharing";
+    const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
 
     let selectedMealType = "夕食";
     let totalMealCal = 0;
@@ -709,8 +708,7 @@
     updateClock();
     setInterval(updateClock, 30000);
     refreshProgress();
-    // ページを開いたときに自動反映したい場合は下の行の // を外してください
-    // syncTrainingFromSheet();
+    syncTrainingFromSheet();
   </script>
 </body>
 </html>
