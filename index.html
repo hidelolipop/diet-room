@@ -46,7 +46,7 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー（gym_back.jpg + 透過対応 hide.gif & moko_cheer.gif・揺れなし） */
+    /* お部屋ヘッダー */
     .room-box {
       position: relative;
       width: 100%;
@@ -567,11 +567,17 @@
       border-top: 1px solid var(--border);
       font-size: 13px;
     }
+
+    .sync-note {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
   <div class="app-wrap">
-    <!-- 1. お部屋ヘッダー（gym_back.jpg + 左にhide.gif、右にmoko_cheer.gif・揺れなし） -->
+    <!-- 1. お部屋ヘッダー -->
     <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋（タッチで応援）" onclick="triggerCharactersCheer()">
       <div class="char-pair">
         <div class="char-stage" id="hideStage">
@@ -687,11 +693,14 @@
 
     <!-- 6. 体重・体脂肪率 -->
     <section class="card" id="weightCard">
-      <h2 class="section-title" style="margin-bottom:12px;">体重・体脂肪率</h2>
+      <div class="section-top">
+        <h2 class="section-title">体重・体脂肪率</h2>
+        <span id="weightSyncStatus" style="font-size:12px; color:var(--text-sub);">スプシ連携</span>
+      </div>
       <form id="weightForm" class="form-grid">
         <div>
           <label for="weightDate">日付</label>
-          <input type="date" id="weightDate" value="2026-11-23" />
+          <input type="date" id="weightDate" value="2026-11-25" />
         </div>
         <div>
           <label for="weightInput">体重 (kg)</label>
@@ -712,15 +721,18 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事記録（foods.json自動計算＋手入力どちらでもOK） -->
+    <!-- 7. 食事記録 -->
     <section class="card" id="mealCard">
       <div class="section-top">
         <h2 class="section-title">食事記録</h2>
-        <button type="button" class="ghost-btn" onclick="resetMealDateToToday()">📅 今日に戻す</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span id="mealSyncStatus" style="font-size:12px; color:var(--text-sub);">スプシ連携</span>
+          <button type="button" class="ghost-btn" onclick="resetMealDateToToday()">📅 今日に戻す</button>
+        </div>
       </div>
       <div class="date-nav-bar">
         <button type="button" class="date-step-btn" onclick="stepMealDate(-1)">← 前日</button>
-        <input type="date" id="mealDateInput" value="2026-11-23" onchange="renderMealView()" />
+        <input type="date" id="mealDateInput" value="2026-11-25" onchange="renderMealView()" />
         <button type="button" class="date-step-btn" onclick="stepMealDate(1)">翌日 →</button>
       </div>
       <div class="summary-pair">
@@ -795,7 +807,7 @@
       </div>
 
       <div class="training-actions">
-        <button type="button" class="btn-primary" onclick="syncTrainingFromSheet()">スプシから更新</button>
+        <button type="button" class="btn-primary" onclick="syncAllFromSheet()">スプシから更新</button>
         <a class="btn-secondary" href="https://docs.google.com/spreadsheets/d/1LyIf7dqQBvAgy6dp4pNgN-8BHa41zE-cZ-AsHj6yngw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
           スプレッドシートを開く
         </a>
@@ -804,6 +816,7 @@
       <div id="workoutHistoryList">
         <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
       </div>
+      <div class="sync-note">※ 食事・体重記録はスプレッドシート（`meal_logs` / `weight_logs`）へ保存され、画面表示の補助キャッシュも保持します。</div>
     </section>
 
     <!-- 9. 目標設定 -->
@@ -849,7 +862,6 @@
     const WORKOUT_GAS_URL = "https://script.google.com/macros/s/AKfycbyZPS7yH82qHLqIVWg9MWXxa8ScPpbngb-Cw5wafd1VFw2ziTtdyZ7d03reObQ46C5j4Q/exec";
     const STORAGE_KEY = "diet_room_state_v2";
 
-    /* タッチ時にGIFを先頭から再生＆応援メッセージ更新（揺れなし） */
     function triggerCharactersCheer() {
       const hideImg = document.getElementById("hideGifImg");
       const mokoImg = document.getElementById("mokoGifImg");
@@ -1003,9 +1015,7 @@
       startBodyFat: 37,
       goalBodyFat: 28,
       goalWeight: 53.4,
-      weightLogs: [
-        { date: "2026-11-22", weight: 60.3, bodyFat: 36.4, memo: "記録済み" }
-      ],
+      weightLogs: [],
       mealLogsByDate: {}
     };
 
@@ -1044,6 +1054,9 @@
         appState = Object.assign({}, appState, parsed);
         if (!appState.mealLogsByDate || typeof appState.mealLogsByDate !== "object") {
           appState.mealLogsByDate = {};
+        }
+        if (!Array.isArray(appState.weightLogs)) {
+          appState.weightLogs = [];
         }
       } catch (e) {}
     }
@@ -1302,7 +1315,7 @@
       }
       listEl.innerHTML = [...appState.weightLogs].reverse().map((row) => {
         const shortDate = formatShortDateWithDay(row.date);
-        const bfText = (row.bodyFat !== null && row.bodyFat !== undefined)
+        const bfText = (row.bodyFat !== null && row.bodyFat !== undefined && row.bodyFat !== "")
           ? ` / ${formatTrimNumber(row.bodyFat)}%`
           : "";
         return `
@@ -1314,7 +1327,18 @@
       }).join("");
     }
 
-    document.getElementById("weightForm").addEventListener("submit", function (e) {
+    async function postToGas(payloadObj) {
+      if (!WORKOUT_GAS_URL || WORKOUT_GAS_URL.startsWith("ここに")) return false;
+      await fetch(WORKOUT_GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payloadObj)
+      });
+      return true;
+    }
+
+    document.getElementById("weightForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const date = document.getElementById("weightDate").value || formatLocalYmd(new Date());
       const wRaw = document.getElementById("weightInput").value;
@@ -1330,28 +1354,38 @@
         appState.currentBodyFat = numBf;
       }
 
-      const existingIdx = appState.weightLogs.findIndex((item) => item.date === date);
       const entry = {
         date,
         weight: numW,
-        bodyFat: bfRaw !== "" ? numBf : (existingIdx >= 0 ? appState.weightLogs[existingIdx].bodyFat : appState.currentBodyFat),
+        bodyFat: bfRaw !== "" ? numBf : null,
         memo: memo || "記録済み"
       };
-      if (existingIdx >= 0) {
-        appState.weightLogs[existingIdx] = entry;
-      } else {
-        appState.weightLogs.push(entry);
-      }
+      appState.weightLogs.push(entry);
 
       saveState();
       renderWeightHistory();
       refreshProgress();
 
+      const statusEl = document.getElementById("weightSyncStatus");
+      if (statusEl) statusEl.textContent = "スプシ送信中...";
+      try {
+        await postToGas({
+          type: "weight",
+          date: entry.date,
+          weight: entry.weight,
+          bodyFat: entry.bodyFat,
+          memo: entry.memo
+        });
+        if (statusEl) statusEl.textContent = "スプシ保存済み";
+      } catch (err) {
+        if (statusEl) statusEl.textContent = "送信エラー";
+      }
+
       this.reset();
       document.getElementById("weightDate").value = date;
     });
 
-    document.getElementById("mealForm").addEventListener("submit", function (e) {
+    document.getElementById("mealForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
       const menu = document.getElementById("mealMenu").value.trim();
@@ -1369,19 +1403,41 @@
 
       if (!menu && !cal && !protein) return;
 
-      if (!Array.isArray(appState.mealLogsByDate[ymd])) {
-        appState.mealLogsByDate[ymd] = [];
-      }
-      appState.mealLogsByDate[ymd].push({
+      const mealItem = {
+        date: ymd,
         mealType: selectedMealType,
         menu: menu || "食事",
         cal,
         protein,
         memo
-      });
+      };
+
+      if (!Array.isArray(appState.mealLogsByDate[ymd])) {
+        appState.mealLogsByDate[ymd] = [];
+      }
+      appState.mealLogsByDate[ymd].push(mealItem);
+
       saveState();
       renderMealView();
       updateDailyCaloriesSummary();
+
+      const statusEl = document.getElementById("mealSyncStatus");
+      if (statusEl) statusEl.textContent = "スプシ送信中...";
+      try {
+        await postToGas({
+          type: "meal",
+          date: mealItem.date,
+          mealType: mealItem.mealType,
+          menu: mealItem.menu,
+          cal: mealItem.cal,
+          protein: mealItem.protein,
+          memo: mealItem.memo
+        });
+        if (statusEl) statusEl.textContent = "スプシ保存済み";
+      } catch (err) {
+        if (statusEl) statusEl.textContent = "送信エラー";
+      }
+
       this.reset();
       manualEdited = { cal: false, protein: false };
       handleMealMenuInput();
@@ -1410,8 +1466,53 @@
       return `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set) ${burnLabel}`;
     }
 
-    async function syncTrainingFromSheet() {
+    function applyMealsFromSheet(mealsList) {
+      if (!Array.isArray(mealsList) || mealsList.length === 0) return;
+      const grouped = {};
+      mealsList.forEach((m) => {
+        const key = normalizeDateKey(m.date);
+        if (!key) return;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push({
+          mealType: m.mealType || "夕食",
+          menu: m.menu || "食事",
+          cal: Number(m.cal) || 0,
+          protein: Number(m.protein) || 0,
+          memo: m.memo || ""
+        });
+      });
+      appState.mealLogsByDate = grouped;
+      saveState();
+      renderMealView();
+      updateDailyCaloriesSummary();
+    }
+
+    function applyWeightsFromSheet(weightsList) {
+      if (!Array.isArray(weightsList) || weightsList.length === 0) return;
+      appState.weightLogs = weightsList.map((w) => ({
+        date: normalizeDateKey(w.date) || String(w.date || ""),
+        weight: Number(w.weight) || 0,
+        bodyFat: (w.bodyFat === "" || w.bodyFat === null || w.bodyFat === undefined) ? null : Number(w.bodyFat),
+        memo: w.memo || "記録済み"
+      }));
+
+      const latest = appState.weightLogs[appState.weightLogs.length - 1];
+      if (latest && latest.weight > 0) {
+        appState.currentWeight = latest.weight;
+      }
+      if (latest && latest.bodyFat !== null && latest.bodyFat !== undefined && latest.bodyFat > 0) {
+        appState.currentBodyFat = latest.bodyFat;
+      }
+
+      saveState();
+      renderWeightHistory();
+      refreshProgress();
+    }
+
+    async function syncAllFromSheet() {
       const statusEl = document.getElementById("workoutSyncStatus");
+      const mealStatusEl = document.getElementById("mealSyncStatus");
+      const weightStatusEl = document.getElementById("weightSyncStatus");
       const statsEl = document.getElementById("workoutStatsBoxes");
       const listEl = document.getElementById("workoutHistoryList");
 
@@ -1478,8 +1579,17 @@
           }
         }
 
+        if (Array.isArray(data.meals)) {
+          applyMealsFromSheet(data.meals);
+        }
+        if (Array.isArray(data.weights)) {
+          applyWeightsFromSheet(data.weights);
+        }
+
         updateDailyCaloriesSummary();
         if (statusEl) statusEl.textContent = "同期完了";
+        if (mealStatusEl) mealStatusEl.textContent = "スプシ同期済み";
+        if (weightStatusEl) weightStatusEl.textContent = "スプシ同期済み";
       } catch (err) {
         if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
       }
@@ -1507,7 +1617,7 @@
     renderWeightHistory();
     renderMealView();
     refreshProgress();
-    syncTrainingFromSheet();
+    syncAllFromSheet();
   </script>
 </body>
 </html>
