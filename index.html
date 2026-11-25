@@ -46,7 +46,6 @@
       box-shadow: 0 4px 16px rgba(74, 59, 50, 0.04);
     }
 
-    /* お部屋ヘッダー */
     .room-box {
       position: relative;
       width: 100%;
@@ -107,7 +106,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
-    /* 時計・天気・摂取/消費カロリーカード */
     .status-top {
       display: flex;
       align-items: center;
@@ -179,7 +177,6 @@
       font-weight: 600;
     }
 
-    /* 応援吹き出しカード */
     .speech-header {
       display: flex;
       align-items: center;
@@ -207,7 +204,6 @@
       padding: 12px 14px;
     }
 
-    /* アイコン付き5列タブ */
     .nav-tabs {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -577,7 +573,6 @@
 </head>
 <body>
   <div class="app-wrap">
-    <!-- 1. お部屋ヘッダー -->
     <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋（タッチで応援）" onclick="triggerCharactersCheer()">
       <div class="char-pair">
         <div class="char-stage" id="hideStage">
@@ -590,7 +585,6 @@
       <span class="room-tap-hint" id="roomTapHint">📣 タッチで応援！</span>
     </section>
 
-    <!-- 2. 時刻＆今日/昨日 摂取・消費カロリーカード -->
     <section class="card" aria-label="時刻と摂取・消費カロリー">
       <div class="status-top">
         <span class="period-badge" id="timePeriodBadge">夜</span>
@@ -614,7 +608,6 @@
       </div>
     </section>
 
-    <!-- 3. 応援吹き出しカード（最近の運動・体重の変化状況に応じて変化） -->
     <section class="card" aria-label="応援メッセージ">
       <div class="speech-header">
         <span class="speech-title" id="speechStatusTitle">✨ まったり過ごしてるよ</span>
@@ -625,7 +618,6 @@
       </div>
     </section>
 
-    <!-- 4. アイコン付き5列タブ -->
     <nav class="nav-tabs" aria-label="メニュー">
       <button type="button" class="tab-btn active" onclick="handleNavClick(this, 'growthCard')">
         <span class="tab-icon">🎯</span>
@@ -649,7 +641,6 @@
       </button>
     </nav>
 
-    <!-- 5. ひできち成長＆目標エリア -->
     <section class="card" id="growthCard">
       <div class="section-top">
         <h2 class="section-title">ひできち成長</h2>
@@ -691,7 +682,6 @@
       </div>
     </section>
 
-    <!-- 6. 体重管理（体重・体脂肪率・筋肉量） -->
     <section class="card" id="weightCard">
       <div class="section-top">
         <h2 class="section-title">体重管理</h2>
@@ -725,7 +715,6 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事管理（デフォルト朝食） -->
     <section class="card" id="mealCard">
       <div class="section-top">
         <h2 class="section-title">食事管理</h2>
@@ -788,7 +777,6 @@
       <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);"></div>
     </section>
 
-    <!-- 8. 運動管理（workout-log で記録したスプシの運動記録を反映） -->
     <section class="card" id="trainingCard">
       <div class="section-top">
         <h2 class="section-title">運動管理</h2>
@@ -821,10 +809,9 @@
         <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
       </div>
 
-      <div class="sync-note">※ 運動記録は <code>workout-log</code> から保存された「運動管理」シートの内容を自動反映します。</div>
+      <div class="sync-note" id="workoutDebugInfo">※ 運動記録は <code>workout-log</code> から保存された「運動管理」シートの内容を自動反映します。</div>
     </section>
 
-    <!-- 9. 目標設定 -->
     <section class="card" id="goalCard">
       <h2 class="section-title" style="margin-bottom:12px;">目標設定</h2>
       <form id="goalForm" class="form-grid">
@@ -1043,6 +1030,48 @@
       return Number.isInteger(n) ? String(n) : n.toFixed(maxDecimals).replace(/\.0$/, "");
     }
 
+    function parseNumLoose(val) {
+      if (val === null || val === undefined || val === "") return 0;
+      const m = String(val).replace(/,/g, "").match(/-?[\d.]+/);
+      return m ? Number(m[0]) || 0 : 0;
+    }
+
+    function pickField(item, keys) {
+      for (const k of keys) {
+        if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== "") {
+          return item[k];
+        }
+      }
+      return "";
+    }
+
+    function normalizeWorkoutItem(raw) {
+      if (!raw || typeof raw !== "object") return null;
+      const dateVal = pickField(raw, ["date", "日付", "実施日", "記録日"]);
+      const locationVal = pickField(raw, ["location", "場所", "ジム", "エリア"]);
+      const exerciseVal = pickField(raw, ["exercise", "種目", "メニュー", "運動", "運動名", "項目"]);
+      const weightVal = pickField(raw, ["weight", "重量", "重さ", "kg"]);
+      const repsVal = pickField(raw, ["reps", "回数", "レップ", "分", "時間"]);
+      const setsVal = pickField(raw, ["sets", "セット", "セット数"]);
+      const timeVal = pickField(raw, ["time", "時間", "分"]);
+      const calVal = pickField(raw, ["calories", "カロリー", "消費カロリー", "kcal"]);
+      const memoVal = pickField(raw, ["memo", "メモ", "詳細", "備考"]);
+
+      if (!dateVal && !exerciseVal && !memoVal && !calVal) return null;
+
+      return {
+        date: String(dateVal || ""),
+        location: String(locationVal || ""),
+        exercise: String(exerciseVal || ""),
+        weight: parseNumLoose(weightVal),
+        reps: parseNumLoose(repsVal),
+        sets: parseNumLoose(setsVal) || 1,
+        time: parseNumLoose(timeVal),
+        calories: parseNumLoose(calVal),
+        memo: String(memoVal || "")
+      };
+    }
+
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
@@ -1085,7 +1114,6 @@
       document.getElementById("liveDate").textContent = `${mo}月${dd}日 (${w})`;
     }
 
-    /* 最近の運動や体重の変化状況に応じた応援メッセージ生成 */
     function updateDynamicEncouragement(resetToFirst = true) {
       const now = new Date();
       const sevenDaysAgo = new Date(now);
@@ -1562,7 +1590,10 @@
       if (item.memo && String(item.memo).includes("kg×")) {
         return `${item.memo} ${burnLabel}`;
       }
-      return `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set) ${burnLabel}`;
+      if (item.weight > 0 || item.reps > 0) {
+        return `${item.weight || 0}kg × ${item.reps || 0}回 (${item.sets || 1}set) ${burnLabel}`;
+      }
+      return `${item.memo || ""} ${burnLabel}`.trim() || "記録済み";
     }
 
     function applyMealsFromSheet(mealsList) {
@@ -1619,6 +1650,7 @@
       const weightStatusEl = document.getElementById("weightSyncStatus");
       const statsEl = document.getElementById("workoutStatsBoxes");
       const listEl = document.getElementById("workoutHistoryList");
+      const debugEl = document.getElementById("workoutDebugInfo");
 
       if (!WORKOUT_GAS_URL || WORKOUT_GAS_URL.startsWith("ここに")) {
         if (statusEl) statusEl.textContent = "GASのURL未設定";
@@ -1628,13 +1660,20 @@
       if (statusEl) statusEl.textContent = "読み込み中...";
 
       try {
-        const res = await fetch(`${WORKOUT_GAS_URL}?action=init`);
+        const res = await fetch(`${WORKOUT_GAS_URL}?action=init&t=${Date.now()}`);
         const data = await res.json();
         if (data.status === "error") {
           throw new Error(data.message || "GAS error");
         }
 
-        const history = Array.isArray(data.history) ? data.history : [];
+        const rawHistory = Array.isArray(data.history)
+          ? data.history
+          : (Array.isArray(data.workouts) ? data.workouts : []);
+
+        const history = rawHistory
+          .map(normalizeWorkoutItem)
+          .filter(Boolean);
+
         workoutHistory = history;
 
         const sessionCount = history.length;
@@ -1692,11 +1731,17 @@
 
         updateDailyCaloriesSummary();
         updateDynamicEncouragement(true);
-        if (statusEl) statusEl.textContent = "運動管理 同期完了";
+        if (statusEl) statusEl.textContent = `運動管理 同期完了（${sessionCount}件）`;
         if (mealStatusEl) mealStatusEl.textContent = "食事管理 同期完了";
         if (weightStatusEl) weightStatusEl.textContent = "体重管理 同期完了";
+        if (debugEl) {
+          debugEl.textContent = `※ 「運動管理」シートから ${sessionCount} 件を読み込みました。`;
+        }
       } catch (err) {
         if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
+        if (debugEl) {
+          debugEl.textContent = `※ 読み込みエラー：${err.message || err}（GASのデプロイ公開設定「全員」とシート名「運動管理」をご確認ください）`;
+        }
       }
     }
 
