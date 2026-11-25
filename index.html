@@ -558,6 +558,14 @@
       margin-bottom: 12px;
     }
 
+    .sub-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
     .history-item {
       display: flex;
       justify-content: space-between;
@@ -614,10 +622,10 @@
       </div>
     </section>
 
-    <!-- 3. 応援吹き出しカード -->
+    <!-- 3. 応援吹き出しカード（最近の運動・体重の変化状況に応じて変化） -->
     <section class="card" aria-label="応援メッセージ">
       <div class="speech-header">
-        <span class="speech-title">✨ まったり過ごしてるよ</span>
+        <span class="speech-title" id="speechStatusTitle">✨ まったり過ごしてるよ</span>
         <span class="speech-sub">ひできちさん応援ルーム</span>
       </div>
       <div class="speech-body" id="encouragementText">
@@ -641,7 +649,7 @@
       </button>
       <button type="button" class="tab-btn" onclick="handleNavClick(this, 'trainingCard')">
         <span class="tab-icon">💪</span>
-        <span>筋トレ</span>
+        <span>運動</span>
       </button>
       <button type="button" class="tab-btn" onclick="handleNavClick(this, 'goalCard')">
         <span class="tab-icon">⚙️</span>
@@ -691,11 +699,11 @@
       </div>
     </section>
 
-    <!-- 6. 体重・体脂肪率 -->
+    <!-- 6. 体重管理（体重・体脂肪率・筋肉量） -->
     <section class="card" id="weightCard">
       <div class="section-top">
-        <h2 class="section-title">体重・体脂肪率</h2>
-        <span id="weightSyncStatus" style="font-size:12px; color:var(--text-sub);">スプシ連携</span>
+        <h2 class="section-title">体重管理</h2>
+        <span id="weightSyncStatus" style="font-size:12px; color:var(--text-sub);">体重管理</span>
       </div>
       <form id="weightForm" class="form-grid">
         <div>
@@ -711,6 +719,10 @@
           <input type="number" step="0.1" id="bodyFatInput" placeholder="36.4" />
         </div>
         <div>
+          <label for="muscleInput">筋肉量 (kg)</label>
+          <input type="number" step="0.1" id="muscleInput" placeholder="38.0" />
+        </div>
+        <div style="grid-column: 1 / -1;">
           <label for="weightMemo">メモ</label>
           <input type="text" id="weightMemo" placeholder="朝の記録・体調など" />
         </div>
@@ -721,12 +733,12 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事記録 -->
+    <!-- 7. 食事管理（デフォルト朝食） -->
     <section class="card" id="mealCard">
       <div class="section-top">
-        <h2 class="section-title">食事記録</h2>
+        <h2 class="section-title">食事管理</h2>
         <div style="display:flex; gap:6px; align-items:center;">
-          <span id="mealSyncStatus" style="font-size:12px; color:var(--text-sub);">スプシ連携</span>
+          <span id="mealSyncStatus" style="font-size:12px; color:var(--text-sub);">食事管理</span>
           <button type="button" class="ghost-btn" onclick="resetMealDateToToday()">📅 今日に戻す</button>
         </div>
       </div>
@@ -740,9 +752,9 @@
         <div class="summary-box">たんぱく質<br /><strong id="mealTotalProtein">-- g</strong></div>
       </div>
       <div class="meal-pills" id="mealPills">
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '朝食')">朝食</button>
+        <button type="button" class="meal-pill active" onclick="selectMeal(this, '朝食')">朝食</button>
         <button type="button" class="meal-pill" onclick="selectMeal(this, '昼食')">昼食</button>
-        <button type="button" class="meal-pill active" onclick="selectMeal(this, '夕食')">夕食</button>
+        <button type="button" class="meal-pill" onclick="selectMeal(this, '夕食')">夕食</button>
         <button type="button" class="meal-pill" onclick="selectMeal(this, '間食')">間食</button>
       </div>
 
@@ -784,11 +796,11 @@
       <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);"></div>
     </section>
 
-    <!-- 8. トレーニング記録（スプシ連携） -->
+    <!-- 8. 運動管理（運動管理）＆ メニュー追加（メニュー追加） -->
     <section class="card" id="trainingCard">
       <div class="section-top">
-        <h2 class="section-title">トレーニング記録</h2>
-        <span id="workoutSyncStatus" style="font-size:12px; color:var(--text-sub);">未同期</span>
+        <h2 class="section-title">運動管理</h2>
+        <span id="workoutSyncStatus" style="font-size:12px; color:var(--text-sub);">運動管理</span>
       </div>
 
       <div class="training-stats" id="workoutStatsBoxes">
@@ -816,7 +828,33 @@
       <div id="workoutHistoryList">
         <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
       </div>
-      <div class="sync-note">※ 食事・体重記録はスプレッドシート（`meal_logs` / `weight_logs`）へ保存され、画面表示の補助キャッシュも保持します。</div>
+
+      <div class="sub-box">
+        <div class="section-top" style="margin-bottom:8px;">
+          <h3 class="section-title" style="font-size:14px;">メニュー追加</h3>
+          <span id="menuSyncStatus" style="font-size:12px; color:var(--text-sub);">メニュー追加</span>
+        </div>
+        <form id="menuAddForm" class="form-grid">
+          <div>
+            <label for="menuExerciseInput">運動項目名</label>
+            <input type="text" id="menuExerciseInput" placeholder="例：レッグプレス、ダンベルフライ" />
+          </div>
+          <div>
+            <label for="menuCategoryInput">部位・カテゴリ</label>
+            <input type="text" id="menuCategoryInput" placeholder="例：脚、胸、有酸素" />
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label for="menuMemoInput">メモ</label>
+            <input type="text" id="menuMemoInput" placeholder="マシン番号やメモなど" />
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <button type="submit" class="btn-secondary">運動項目を追加</button>
+          </div>
+        </form>
+        <div id="menuListDisplay" style="margin-top:10px; font-size:12px; color:var(--text-sub);"></div>
+      </div>
+
+      <div class="sync-note">シート対応：運動管理＝<code>運動管理</code> / 食事管理＝<code>食事管理</code> / 体重管理＝<code>体重管理</code> / メニュー追加＝<code>メニュー追加</code></div>
     </section>
 
     <!-- 9. 目標設定 -->
@@ -995,15 +1033,14 @@
       handleMealMenuInput();
     }
 
-    const messages = [
-      "ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨",
-      "ヒデちゃんもダンベルで気合十分💪 モコちゃんと一緒に応援してるよ📣🐑",
-      "少しずつでも前に進んでいれば大成功🌱 今日もいい調子ですね！"
+    let dynamicMessages = [
+      "ひできちさん、今日もコツコツおつかれさまです🌸 自分のペースで無理なくいきましょうね✨"
     ];
     let msgIndex = 0;
 
-    let selectedMealType = "夕食";
+    let selectedMealType = "朝食";
     let workoutHistory = [];
+    let exerciseMenus = [];
 
     let appState = {
       currentWeight: 60.3,
@@ -1082,9 +1119,94 @@
       document.getElementById("liveDate").textContent = `${mo}月${dd}日 (${w})`;
     }
 
+    /* 最近の運動や体重の変化状況に応じた応援メッセージ生成 */
+    function updateDynamicEncouragement(resetToFirst = true) {
+      const now = new Date();
+      const sevenDaysAgo = new Date(now);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoYmd = formatLocalYmd(sevenDaysAgo);
+
+      // 直近7日間の運動回数・最新運動種目
+      const recentWorkouts = workoutHistory.filter((item) => {
+        const d = normalizeDateKey(item.date);
+        return d && d >= sevenDaysAgoYmd;
+      });
+      const latestWorkout = workoutHistory.length > 0 ? workoutHistory[workoutHistory.length - 1] : null;
+
+      // 体重の変化（有効な体重記録が2件以上なら前回比、1件ならスタート比）
+      const validWeights = appState.weightLogs.filter((w) => w.weight !== null && w.weight !== undefined && !isNaN(Number(w.weight)) && Number(w.weight) > 0);
+      let weightTrend = "none";
+      let diffKg = 0;
+
+      if (validWeights.length >= 2) {
+        const prevW = Number(validWeights[validWeights.length - 2].weight);
+        const lastW = Number(validWeights[validWeights.length - 1].weight);
+        diffKg = Number((lastW - prevW).toFixed(1));
+        if (diffKg <= -0.2) weightTrend = "down";
+        else if (diffKg >= 0.3) weightTrend = "up";
+        else weightTrend = "steady";
+      } else {
+        const startW = Number(appState.startWeight) || 61;
+        const currW = Number(appState.currentWeight) || 60.3;
+        diffKg = Number((currW - startW).toFixed(1));
+        if (diffKg <= -0.2) weightTrend = "down";
+        else if (diffKg >= 0.3) weightTrend = "up";
+        else weightTrend = "steady";
+      }
+
+      const titleEl = document.getElementById("speechStatusTitle");
+      const list = [];
+
+      // 状況に応じたタイトル＆メインコメント
+      if (weightTrend === "down" && recentWorkouts.length >= 2) {
+        if (titleEl) titleEl.textContent = "🎉 絶好調モード！";
+        list.push(`体重が前回より ${Math.abs(diffKg).toFixed(1)}kg 減って、ここ7日間で運動も ${recentWorkouts.length}回！バッチリの流れですね✨`);
+      } else if (weightTrend === "down") {
+        if (titleEl) titleEl.textContent = "📉 スルスル前進中！";
+        list.push(`体重が ${Math.abs(diffKg).toFixed(1)}kg 減っていますよ〜！コツコツ続けた成果が出てきていますね🌸`);
+      } else if (weightTrend === "up" && recentWorkouts.length >= 1) {
+        if (titleEl) titleEl.textContent = "💪 筋トレ＆リカバリー中";
+        list.push(`体重は少し増えているけど、運動も ${recentWorkouts.length}回 頑張れているから大丈夫！水分や筋肉の張りもあるので焦らずいきましょう😊`);
+      } else if (weightTrend === "up") {
+        if (titleEl) titleEl.textContent = "🌿 ゆっくり整えよう";
+        list.push(`少し体重が増え気味ですが、日々の変動はよくあること✨ 今日は水分とたんぱく質を意識してマイペースに整えていきましょう🍵`);
+      } else if (recentWorkouts.length >= 3) {
+        if (titleEl) titleEl.textContent = "🔥 運動習慣バッチリ！";
+        list.push(`体重も安定していて、ここ7日間で運動 ${recentWorkouts.length}回！いいリズムがしっかり身についていますね💪🐑`);
+      } else {
+        if (titleEl) titleEl.textContent = "✨ まったり過ごしてるよ";
+        list.push(`体重はしっかりキープ中🌱 自分のペースで無理なく積み重ねていきましょうね✨`);
+      }
+
+      // 運動状況コメント
+      if (recentWorkouts.length > 0 && latestWorkout) {
+        const exName = latestWorkout.exercise || "トレーニング";
+        list.push(`直近の「${exName}」おつかれさまです！ここ1週間で ${recentWorkouts.length}回 動けていて素晴らしいです👏`);
+      } else {
+        list.push(`最近は少し休息モードかな？お散歩や軽いストレッチだけでも気分スッキリしますよ🚶‍♀️🌸`);
+      }
+
+      // 目標までの進捗コメント
+      const remainW = Math.max(0, (Number(appState.currentWeight) || 60.3) - (Number(appState.goalWeight) || 53.4));
+      list.push(`目標体重まであと ${remainW.toFixed(1)}kg！ヒデちゃん＆モコちゃんがいつも応援してるよ📣🐑`);
+
+      dynamicMessages = list;
+      if (resetToFirst) {
+        msgIndex = 0;
+      } else {
+        msgIndex = msgIndex % dynamicMessages.length;
+      }
+      const textEl = document.getElementById("encouragementText");
+      if (textEl) textEl.textContent = dynamicMessages[msgIndex];
+    }
+
     function cycleEncouragement() {
-      msgIndex = (msgIndex + 1) % messages.length;
-      document.getElementById("encouragementText").textContent = messages[msgIndex];
+      if (!dynamicMessages.length) {
+        updateDynamicEncouragement(true);
+        return;
+      }
+      msgIndex = (msgIndex + 1) % dynamicMessages.length;
+      document.getElementById("encouragementText").textContent = dynamicMessages[msgIndex];
     }
 
     function handleNavClick(btn, id) {
@@ -1305,6 +1427,7 @@
       document.getElementById("growthProgressFill").style.width = `${growthPct}%`;
 
       updateDailyCaloriesSummary();
+      updateDynamicEncouragement(true);
     }
 
     function renderWeightHistory() {
@@ -1315,15 +1438,36 @@
       }
       listEl.innerHTML = [...appState.weightLogs].reverse().map((row) => {
         const shortDate = formatShortDateWithDay(row.date);
-        const bfText = (row.bodyFat !== null && row.bodyFat !== undefined && row.bodyFat !== "")
-          ? ` / ${formatTrimNumber(row.bodyFat)}%`
-          : "";
+        const parts = [];
+        if (row.weight !== null && row.weight !== undefined && row.weight !== "") {
+          parts.push(`${formatTrimNumber(row.weight)} kg`);
+        }
+        if (row.bodyFat !== null && row.bodyFat !== undefined && row.bodyFat !== "") {
+          parts.push(`${formatTrimNumber(row.bodyFat)}%`);
+        }
+        if (row.muscleMass !== null && row.muscleMass !== undefined && row.muscleMass !== "") {
+          parts.push(`筋 ${formatTrimNumber(row.muscleMass)} kg`);
+        }
         return `
           <div class="history-item">
-            <span><strong>${shortDate}</strong> ${formatTrimNumber(row.weight)} kg${bfText}</span>
+            <span><strong>${shortDate}</strong> ${parts.join(" / ")}</span>
             <span style="color:var(--text-sub);">${row.memo || "記録済み"}</span>
           </div>
         `;
+      }).join("");
+    }
+
+    function renderMenuList() {
+      const listEl = document.getElementById("menuListDisplay");
+      if (!listEl) return;
+      if (!exerciseMenus.length) {
+        listEl.textContent = "登録済みの運動項目はまだありません。";
+        return;
+      }
+      listEl.innerHTML = exerciseMenus.map((m) => {
+        const cat = m.category ? ` [${m.category}]` : "";
+        const memo = m.memo ? ` - ${m.memo}` : "";
+        return `<div class="history-item"><span><strong>${m.exercise}</strong>${cat}</span><span style="color:var(--text-sub);">${memo}</span></div>`;
       }).join("");
     }
 
@@ -1343,21 +1487,28 @@
       const date = document.getElementById("weightDate").value || formatLocalYmd(new Date());
       const wRaw = document.getElementById("weightInput").value;
       const bfRaw = document.getElementById("bodyFatInput").value;
+      const mRaw = document.getElementById("muscleInput").value;
       const memo = document.getElementById("weightMemo").value.trim();
-      if (!wRaw && !bfRaw) return;
+      if (!wRaw && !bfRaw && !mRaw) return;
 
       const numW = wRaw !== "" ? Number(wRaw) : Number(appState.currentWeight);
       const numBf = bfRaw !== "" ? Number(bfRaw) : Number(appState.currentBodyFat);
+      const numM = mRaw !== "" ? Number(mRaw) : null;
 
       appState.currentWeight = numW;
       if (bfRaw !== "") {
         appState.currentBodyFat = numBf;
       }
+      if (numM !== null && !isNaN(numM)) {
+        appState.muscleMass = numM;
+        document.getElementById("muscleMassInput").value = numM;
+      }
 
       const entry = {
         date,
-        weight: numW,
+        weight: wRaw !== "" ? numW : null,
         bodyFat: bfRaw !== "" ? numBf : null,
+        muscleMass: numM,
         memo: memo || "記録済み"
       };
       appState.weightLogs.push(entry);
@@ -1367,16 +1518,17 @@
       refreshProgress();
 
       const statusEl = document.getElementById("weightSyncStatus");
-      if (statusEl) statusEl.textContent = "スプシ送信中...";
+      if (statusEl) statusEl.textContent = "体重管理へ送信中...";
       try {
         await postToGas({
           type: "weight",
           date: entry.date,
           weight: entry.weight,
           bodyFat: entry.bodyFat,
+          muscleMass: entry.muscleMass,
           memo: entry.memo
         });
-        if (statusEl) statusEl.textContent = "スプシ保存済み";
+        if (statusEl) statusEl.textContent = "体重管理に保存済み";
       } catch (err) {
         if (statusEl) statusEl.textContent = "送信エラー";
       }
@@ -1422,7 +1574,7 @@
       updateDailyCaloriesSummary();
 
       const statusEl = document.getElementById("mealSyncStatus");
-      if (statusEl) statusEl.textContent = "スプシ送信中...";
+      if (statusEl) statusEl.textContent = "食事管理へ送信中...";
       try {
         await postToGas({
           type: "meal",
@@ -1433,7 +1585,7 @@
           protein: mealItem.protein,
           memo: mealItem.memo
         });
-        if (statusEl) statusEl.textContent = "スプシ保存済み";
+        if (statusEl) statusEl.textContent = "食事管理に保存済み";
       } catch (err) {
         if (statusEl) statusEl.textContent = "送信エラー";
       }
@@ -1441,6 +1593,33 @@
       this.reset();
       manualEdited = { cal: false, protein: false };
       handleMealMenuInput();
+    });
+
+    document.getElementById("menuAddForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const exercise = document.getElementById("menuExerciseInput").value.trim();
+      const category = document.getElementById("menuCategoryInput").value.trim();
+      const memo = document.getElementById("menuMemoInput").value.trim();
+      if (!exercise) return;
+
+      exerciseMenus.push({ exercise, category, memo });
+      renderMenuList();
+
+      const statusEl = document.getElementById("menuSyncStatus");
+      if (statusEl) statusEl.textContent = "メニュー追加へ送信中...";
+      try {
+        await postToGas({
+          type: "menu",
+          exercise,
+          category,
+          memo
+        });
+        if (statusEl) statusEl.textContent = "メニュー追加に保存済み";
+      } catch (err) {
+        if (statusEl) statusEl.textContent = "送信エラー";
+      }
+
+      this.reset();
     });
 
     document.getElementById("goalForm").addEventListener("submit", function (e) {
@@ -1474,7 +1653,7 @@
         if (!key) return;
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push({
-          mealType: m.mealType || "夕食",
+          mealType: m.mealType || "朝食",
           menu: m.menu || "食事",
           cal: Number(m.cal) || 0,
           protein: Number(m.protein) || 0,
@@ -1491,8 +1670,9 @@
       if (!Array.isArray(weightsList) || weightsList.length === 0) return;
       appState.weightLogs = weightsList.map((w) => ({
         date: normalizeDateKey(w.date) || String(w.date || ""),
-        weight: Number(w.weight) || 0,
+        weight: (w.weight === "" || w.weight === null || w.weight === undefined) ? null : Number(w.weight),
         bodyFat: (w.bodyFat === "" || w.bodyFat === null || w.bodyFat === undefined) ? null : Number(w.bodyFat),
+        muscleMass: (w.muscleMass === "" || w.muscleMass === null || w.muscleMass === undefined) ? null : Number(w.muscleMass),
         memo: w.memo || "記録済み"
       }));
 
@@ -1502,6 +1682,10 @@
       }
       if (latest && latest.bodyFat !== null && latest.bodyFat !== undefined && latest.bodyFat > 0) {
         appState.currentBodyFat = latest.bodyFat;
+      }
+      if (latest && latest.muscleMass !== null && latest.muscleMass !== undefined && latest.muscleMass > 0) {
+        appState.muscleMass = latest.muscleMass;
+        document.getElementById("muscleMassInput").value = latest.muscleMass;
       }
 
       saveState();
@@ -1513,6 +1697,7 @@
       const statusEl = document.getElementById("workoutSyncStatus");
       const mealStatusEl = document.getElementById("mealSyncStatus");
       const weightStatusEl = document.getElementById("weightSyncStatus");
+      const menuStatusEl = document.getElementById("menuSyncStatus");
       const statsEl = document.getElementById("workoutStatsBoxes");
       const listEl = document.getElementById("workoutHistoryList");
 
@@ -1562,7 +1747,7 @@
 
         if (listEl) {
           if (history.length === 0) {
-            listEl.innerHTML = `<div style="font-size:13px; color:var(--text-sub);">記録シートにまだデータがありません。</div>`;
+            listEl.innerHTML = `<div style="font-size:13px; color:var(--text-sub);">運動管理シートにまだデータがありません。</div>`;
           } else {
             const recent = [...history].reverse().slice(0, 10);
             listEl.innerHTML = recent.map((item) => {
@@ -1585,11 +1770,17 @@
         if (Array.isArray(data.weights)) {
           applyWeightsFromSheet(data.weights);
         }
+        if (Array.isArray(data.menus)) {
+          exerciseMenus = data.menus;
+          renderMenuList();
+        }
 
         updateDailyCaloriesSummary();
-        if (statusEl) statusEl.textContent = "同期完了";
-        if (mealStatusEl) mealStatusEl.textContent = "スプシ同期済み";
-        if (weightStatusEl) weightStatusEl.textContent = "スプシ同期済み";
+        updateDynamicEncouragement(true);
+        if (statusEl) statusEl.textContent = "運動管理 同期完了";
+        if (mealStatusEl) mealStatusEl.textContent = "食事管理 同期完了";
+        if (weightStatusEl) weightStatusEl.textContent = "体重管理 同期完了";
+        if (menuStatusEl) menuStatusEl.textContent = "メニュー追加 同期完了";
       } catch (err) {
         if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
       }
@@ -1616,6 +1807,7 @@
     setInterval(updateClock, 30000);
     renderWeightHistory();
     renderMealView();
+    renderMenuList();
     refreshProgress();
     syncAllFromSheet();
   </script>
