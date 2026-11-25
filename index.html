@@ -1257,12 +1257,21 @@
 
     function normalizeDateKey(rawDate) {
       const str = String(rawDate || "").trim();
-      const match = str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-      if (!match) return "";
-      const y = match[1];
-      const m = String(match[2]).padStart(2, "0");
-      const d = String(match[3]).padStart(2, "0");
-      return `${y}-${m}-${d}`;
+      const ymdMatch = str.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
+      if (ymdMatch) {
+        const y = ymdMatch[1];
+        const m = String(ymdMatch[2]).padStart(2, "0");
+        const d = String(ymdMatch[3]).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+      const mdMatch = str.match(/^(\d{1,2})[\/\-月](\d{1,2})/);
+      if (mdMatch) {
+        const y = String(new Date().getFullYear());
+        const m = String(mdMatch[1]).padStart(2, "0");
+        const d = String(mdMatch[2]).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+      return "";
     }
 
     function getExerciseBurnForDate(ymd) {
@@ -1731,11 +1740,13 @@
 
         updateDailyCaloriesSummary();
         updateDynamicEncouragement(true);
+        const todayKey = formatLocalYmd(new Date());
+        const todayBurnExtra = getExerciseBurnForDate(todayKey);
         if (statusEl) statusEl.textContent = `運動管理 同期完了（${sessionCount}件）`;
         if (mealStatusEl) mealStatusEl.textContent = "食事管理 同期完了";
         if (weightStatusEl) weightStatusEl.textContent = "体重管理 同期完了";
         if (debugEl) {
-          debugEl.textContent = `※ 「運動管理」シートから ${sessionCount} 件を読み込みました。`;
+          debugEl.textContent = `※ 「運動管理」シートから ${sessionCount} 件読込（今日 ${todayKey} の運動消費：+${todayBurnExtra} kcal）`;
         }
       } catch (err) {
         if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
