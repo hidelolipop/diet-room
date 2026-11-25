@@ -558,14 +558,6 @@
       margin-bottom: 12px;
     }
 
-    .sub-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 14px;
-    }
-
     .history-item {
       display: flex;
       justify-content: space-between;
@@ -796,7 +788,7 @@
       <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);"></div>
     </section>
 
-    <!-- 8. 運動管理（運動管理）＆ メニュー追加（メニュー追加） -->
+    <!-- 8. 運動管理（workout-log で記録したスプシの運動記録を反映） -->
     <section class="card" id="trainingCard">
       <div class="section-top">
         <h2 class="section-title">運動管理</h2>
@@ -829,32 +821,7 @@
         <div style="font-size:13px; color:var(--text-sub);">「スプシから更新」を押すとスプレッドシートの運動データを反映します。</div>
       </div>
 
-      <div class="sub-box">
-        <div class="section-top" style="margin-bottom:8px;">
-          <h3 class="section-title" style="font-size:14px;">メニュー追加</h3>
-          <span id="menuSyncStatus" style="font-size:12px; color:var(--text-sub);">メニュー追加</span>
-        </div>
-        <form id="menuAddForm" class="form-grid">
-          <div>
-            <label for="menuExerciseInput">運動項目名</label>
-            <input type="text" id="menuExerciseInput" placeholder="例：レッグプレス、ダンベルフライ" />
-          </div>
-          <div>
-            <label for="menuCategoryInput">部位・カテゴリ</label>
-            <input type="text" id="menuCategoryInput" placeholder="例：脚、胸、有酸素" />
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <label for="menuMemoInput">メモ</label>
-            <input type="text" id="menuMemoInput" placeholder="マシン番号やメモなど" />
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <button type="submit" class="btn-secondary">運動項目を追加</button>
-          </div>
-        </form>
-        <div id="menuListDisplay" style="margin-top:10px; font-size:12px; color:var(--text-sub);"></div>
-      </div>
-
-      <div class="sync-note">シート対応：運動管理＝<code>運動管理</code> / 食事管理＝<code>食事管理</code> / 体重管理＝<code>体重管理</code> / メニュー追加＝<code>メニュー追加</code></div>
+      <div class="sync-note">※ 運動記録は <code>workout-log</code> から保存された「運動管理」シートの内容を自動反映します。</div>
     </section>
 
     <!-- 9. 目標設定 -->
@@ -1040,7 +1007,6 @@
 
     let selectedMealType = "朝食";
     let workoutHistory = [];
-    let exerciseMenus = [];
 
     let appState = {
       currentWeight: 60.3,
@@ -1126,14 +1092,12 @@
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoYmd = formatLocalYmd(sevenDaysAgo);
 
-      // 直近7日間の運動回数・最新運動種目
       const recentWorkouts = workoutHistory.filter((item) => {
         const d = normalizeDateKey(item.date);
         return d && d >= sevenDaysAgoYmd;
       });
       const latestWorkout = workoutHistory.length > 0 ? workoutHistory[workoutHistory.length - 1] : null;
 
-      // 体重の変化（有効な体重記録が2件以上なら前回比、1件ならスタート比）
       const validWeights = appState.weightLogs.filter((w) => w.weight !== null && w.weight !== undefined && !isNaN(Number(w.weight)) && Number(w.weight) > 0);
       let weightTrend = "none";
       let diffKg = 0;
@@ -1157,7 +1121,6 @@
       const titleEl = document.getElementById("speechStatusTitle");
       const list = [];
 
-      // 状況に応じたタイトル＆メインコメント
       if (weightTrend === "down" && recentWorkouts.length >= 2) {
         if (titleEl) titleEl.textContent = "🎉 絶好調モード！";
         list.push(`体重が前回より ${Math.abs(diffKg).toFixed(1)}kg 減って、ここ7日間で運動も ${recentWorkouts.length}回！バッチリの流れですね✨`);
@@ -1178,7 +1141,6 @@
         list.push(`体重はしっかりキープ中🌱 自分のペースで無理なく積み重ねていきましょうね✨`);
       }
 
-      // 運動状況コメント
       if (recentWorkouts.length > 0 && latestWorkout) {
         const exName = latestWorkout.exercise || "トレーニング";
         list.push(`直近の「${exName}」おつかれさまです！ここ1週間で ${recentWorkouts.length}回 動けていて素晴らしいです👏`);
@@ -1186,7 +1148,6 @@
         list.push(`最近は少し休息モードかな？お散歩や軽いストレッチだけでも気分スッキリしますよ🚶‍♀️🌸`);
       }
 
-      // 目標までの進捗コメント
       const remainW = Math.max(0, (Number(appState.currentWeight) || 60.3) - (Number(appState.goalWeight) || 53.4));
       list.push(`目標体重まであと ${remainW.toFixed(1)}kg！ヒデちゃん＆モコちゃんがいつも応援してるよ📣🐑`);
 
@@ -1457,20 +1418,6 @@
       }).join("");
     }
 
-    function renderMenuList() {
-      const listEl = document.getElementById("menuListDisplay");
-      if (!listEl) return;
-      if (!exerciseMenus.length) {
-        listEl.textContent = "登録済みの運動項目はまだありません。";
-        return;
-      }
-      listEl.innerHTML = exerciseMenus.map((m) => {
-        const cat = m.category ? ` [${m.category}]` : "";
-        const memo = m.memo ? ` - ${m.memo}` : "";
-        return `<div class="history-item"><span><strong>${m.exercise}</strong>${cat}</span><span style="color:var(--text-sub);">${memo}</span></div>`;
-      }).join("");
-    }
-
     async function postToGas(payloadObj) {
       if (!WORKOUT_GAS_URL || WORKOUT_GAS_URL.startsWith("ここに")) return false;
       await fetch(WORKOUT_GAS_URL, {
@@ -1595,33 +1542,6 @@
       handleMealMenuInput();
     });
 
-    document.getElementById("menuAddForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const exercise = document.getElementById("menuExerciseInput").value.trim();
-      const category = document.getElementById("menuCategoryInput").value.trim();
-      const memo = document.getElementById("menuMemoInput").value.trim();
-      if (!exercise) return;
-
-      exerciseMenus.push({ exercise, category, memo });
-      renderMenuList();
-
-      const statusEl = document.getElementById("menuSyncStatus");
-      if (statusEl) statusEl.textContent = "メニュー追加へ送信中...";
-      try {
-        await postToGas({
-          type: "menu",
-          exercise,
-          category,
-          memo
-        });
-        if (statusEl) statusEl.textContent = "メニュー追加に保存済み";
-      } catch (err) {
-        if (statusEl) statusEl.textContent = "送信エラー";
-      }
-
-      this.reset();
-    });
-
     document.getElementById("goalForm").addEventListener("submit", function (e) {
       e.preventDefault();
       appState.height = Number(document.getElementById("heightInput").value) || 163;
@@ -1697,7 +1617,6 @@
       const statusEl = document.getElementById("workoutSyncStatus");
       const mealStatusEl = document.getElementById("mealSyncStatus");
       const weightStatusEl = document.getElementById("weightSyncStatus");
-      const menuStatusEl = document.getElementById("menuSyncStatus");
       const statsEl = document.getElementById("workoutStatsBoxes");
       const listEl = document.getElementById("workoutHistoryList");
 
@@ -1770,17 +1689,12 @@
         if (Array.isArray(data.weights)) {
           applyWeightsFromSheet(data.weights);
         }
-        if (Array.isArray(data.menus)) {
-          exerciseMenus = data.menus;
-          renderMenuList();
-        }
 
         updateDailyCaloriesSummary();
         updateDynamicEncouragement(true);
         if (statusEl) statusEl.textContent = "運動管理 同期完了";
         if (mealStatusEl) mealStatusEl.textContent = "食事管理 同期完了";
         if (weightStatusEl) weightStatusEl.textContent = "体重管理 同期完了";
-        if (menuStatusEl) menuStatusEl.textContent = "メニュー追加 同期完了";
       } catch (err) {
         if (statusEl) statusEl.textContent = "取得失敗（URL・公開設定を確認）";
       }
@@ -1807,7 +1721,6 @@
     setInterval(updateClock, 30000);
     renderWeightHistory();
     renderMealView();
-    renderMenuList();
     refreshProgress();
     syncAllFromSheet();
   </script>
