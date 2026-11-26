@@ -1,191 +1,650 @@
 [
-  { "keywords": ["ご飯", "ごはん", "白米", "ライス"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 156, "proteinPerBase": 2.5, "defaultAmount": 150 },
-  { "keywords": ["大盛りご飯", "ご飯大盛り"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 156, "proteinPerBase": 2.5, "defaultAmount": 250 },
-  { "keywords": ["小盛りご飯", "ご飯小盛り"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 156, "proteinPerBase": 2.5, "defaultAmount": 100 },
-  { "keywords": ["玄米"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 152, "proteinPerBase": 2.6, "defaultAmount": 150 },
-  { "keywords": ["麦ご飯", "もち麦", "押し麦"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 145, "proteinPerBase": 2.7, "defaultAmount": 150 },
-  { "keywords": ["雑穀米", "五穀米", "十六穀米"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 153, "proteinPerBase": 2.7, "defaultAmount": 150 },
-  { "keywords": ["おかゆ", "お粥"], "unit": "gram", "baseAmount": 200, "kcalPerBase": 140, "proteinPerBase": 2.2, "defaultAmount": 200 },
-  { "keywords": ["おにぎり", "おむすび"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 180, "proteinPerBase": 3.5, "defaultAmount": 1 },
-  { "keywords": ["ツナマヨおにぎり"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 230, "proteinPerBase": 5.5, "defaultAmount": 1 },
-  { "keywords": ["鮭おにぎり", "しゃけおにぎり"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 190, "proteinPerBase": 5.5, "defaultAmount": 1 },
-  { "keywords": ["梅おにぎり", "昆布おにぎり"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 175, "proteinPerBase": 3.2, "defaultAmount": 1 },
-
-  { "keywords": ["食パン", "トースト"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 158, "proteinPerBase": 5.3, "defaultAmount": 1 },
-  { "keywords": ["バタートースト", "あんバタートースト"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 240, "proteinPerBase": 5.5, "defaultAmount": 1 },
-  { "keywords": ["フランスパン", "バゲット"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 279, "proteinPerBase": 9.3, "defaultAmount": 60 },
-  { "keywords": ["ロールパン", "バターロール"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 115, "proteinPerBase": 3.0, "defaultAmount": 1 },
-  { "keywords": ["クロワッサン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 220, "proteinPerBase": 4.0, "defaultAmount": 1 },
-  { "keywords": ["メロンパン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 390, "proteinPerBase": 6.5, "defaultAmount": 1 },
-  { "keywords": ["カレーパン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 360, "proteinPerBase": 8.0, "defaultAmount": 1 },
-  { "keywords": ["あんぱん", "クリームパン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 290, "proteinPerBase": 6.8, "defaultAmount": 1 },
-  { "keywords": ["サンドイッチ", "たまごサンド", "ハムサンド"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 350, "proteinPerBase": 12.0, "defaultAmount": 1 },
-  { "keywords": ["ホットドッグ", "ハンバーガー", "チーズバーガー"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 320, "proteinPerBase": 15.0, "defaultAmount": 1 },
-  { "keywords": ["ピザ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 240, "proteinPerBase": 10.0, "defaultAmount": 2 },
-  { "keywords": ["ベーグル"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 250, "proteinPerBase": 8.5, "defaultAmount": 1 },
-  { "keywords": ["オートミール"], "unit": "gram", "baseAmount": 30, "kcalPerBase": 110, "proteinPerBase": 4.1, "defaultAmount": 30 },
-
-  { "keywords": ["うどん", "かけうどん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 270, "proteinPerBase": 6.5, "defaultAmount": 1 },
-  { "keywords": ["きつねうどん", "たぬきうどん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 390, "proteinPerBase": 11.0, "defaultAmount": 1 },
-  { "keywords": ["カレーうどん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 450, "proteinPerBase": 10.5, "defaultAmount": 1 },
-  { "keywords": ["焼うどん", "焼きうどん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 460, "proteinPerBase": 13.0, "defaultAmount": 1 },
-  { "keywords": ["そうめん", "素麺", "冷や麦"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 340, "proteinPerBase": 8.5, "defaultAmount": 1 },
-  { "keywords": ["ラーメン", "醤油ラーメン", "中華そば"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 470, "proteinPerBase": 19.0, "defaultAmount": 1 },
-  { "keywords": ["味噌ラーメン"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 580, "proteinPerBase": 22.0, "defaultAmount": 1 },
-  { "keywords": ["塩ラーメン", "とんこつラーメン"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 520, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["タンメン", "ちゃんぽん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 550, "proteinPerBase": 21.0, "defaultAmount": 1 },
-  { "keywords": ["あんかけ焼きそば", "五目焼きそば", "皿うどん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 640, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["パスタ", "スパゲッティ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 580, "proteinPerBase": 18.0, "defaultAmount": 1 },
-  { "keywords": ["ペペロンチーノ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 520, "proteinPerBase": 14.0, "defaultAmount": 1 },
-  { "keywords": ["カルボナーラ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 720, "proteinPerBase": 24.0, "defaultAmount": 1 },
-  { "keywords": ["ミートソース", "ナポリタン", "ボロネーゼ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 620, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["たらこパスタ", "明太子パスタ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 540, "proteinPerBase": 19.0, "defaultAmount": 1 },
-  { "keywords": ["焼きそば"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 510, "proteinPerBase": 15.0, "defaultAmount": 1 },
-  { "keywords": ["冷やし中華"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 480, "proteinPerBase": 16.0, "defaultAmount": 1 },
-
-  { "keywords": ["鶏むね肉", "鶏胸肉", "とりむね", "皮なし鶏むね"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 116, "proteinPerBase": 23.3, "defaultAmount": 100 },
-  { "keywords": ["皮あり鶏むね"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 145, "proteinPerBase": 21.0, "defaultAmount": 100 },
-  { "keywords": ["サラダチキン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 115, "proteinPerBase": 22.0, "defaultAmount": 1 },
-  { "keywords": ["鶏ささみ", "ささみ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 98, "proteinPerBase": 23.9, "defaultAmount": 100 },
-  { "keywords": ["鶏もも肉", "とりもも"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 204, "proteinPerBase": 16.6, "defaultAmount": 100 },
-  { "keywords": ["焼き鳥", "やきとり"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 90, "proteinPerBase": 8.5, "defaultAmount": 2 },
-  { "keywords": ["手羽先", "手羽元"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 110, "proteinPerBase": 9.0, "defaultAmount": 2 },
-  { "keywords": ["ケンタッキー", "オリジナルチキン", "フライドチキン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 218, "proteinPerBase": 18.2, "defaultAmount": 1 },
-  { "keywords": ["チキン南蛮"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 560, "proteinPerBase": 26.0, "defaultAmount": 1 },
-  { "keywords": ["照り焼きチキン", "鶏の照り焼き"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 380, "proteinPerBase": 24.0, "defaultAmount": 1 },
-  { "keywords": ["油淋鶏", "ユーリンチー"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 460, "proteinPerBase": 23.0, "defaultAmount": 1 },
-  { "keywords": ["棒棒鶏", "バンバンジー"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 240, "proteinPerBase": 21.0, "defaultAmount": 1 },
-  { "keywords": ["豚ロース", "豚肉", "豚こま", "豚バラ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 220, "proteinPerBase": 19.0, "defaultAmount": 100 },
-  { "keywords": ["豚ヒレ", "豚もも"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 130, "proteinPerBase": 22.0, "defaultAmount": 100 },
-  { "keywords": ["ひき肉", "合挽き肉", "豚ひき肉", "鶏ひき肉"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 210, "proteinPerBase": 18.0, "defaultAmount": 100 },
-  { "keywords": ["牛肉", "牛赤身", "牛もも", "ステーキ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 180, "proteinPerBase": 20.0, "defaultAmount": 100 },
-  { "keywords": ["牛バラ", "カルビ", "焼肉"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 370, "proteinPerBase": 14.0, "defaultAmount": 100 },
-  { "keywords": ["ローストビーフ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 195, "proteinPerBase": 21.5, "defaultAmount": 80 },
-  { "keywords": ["ウインナー", "ソーセージ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 62, "proteinPerBase": 2.4, "defaultAmount": 2 },
-  { "keywords": ["ベーコン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 80, "proteinPerBase": 2.6, "defaultAmount": 1 },
-  { "keywords": ["ハム", "ロースハム"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 20, "proteinPerBase": 1.8, "defaultAmount": 2 },
-  { "keywords": ["焼豚", "チャーシュー"], "unit": "gram", "baseAmount": 50, "kcalPerBase": 140, "proteinPerBase": 11.0, "defaultAmount": 50 },
-
-  { "keywords": ["鮭", "サーモン", "焼き鮭"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 160, "proteinPerBase": 22.0, "defaultAmount": 100 },
-  { "keywords": ["サバ", "さば", "鯖", "サバ塩焼き", "サバ味噌"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 247, "proteinPerBase": 20.7, "defaultAmount": 100 },
-  { "keywords": ["アジ", "あじ", "鯵", "アジフライ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 160, "proteinPerBase": 15.0, "defaultAmount": 1 },
-  { "keywords": ["マグロ", "まぐろ", "鮪"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 125, "proteinPerBase": 26.0, "defaultAmount": 100 },
-  { "keywords": ["ぶり", "ブリ", "鰤", "ぶり大根", "ぶりの照り焼き"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 257, "proteinPerBase": 21.4, "defaultAmount": 100 },
-  { "keywords": ["タラ", "たら", "鱈", "ホッケ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 85, "proteinPerBase": 18.0, "defaultAmount": 100 },
-  { "keywords": ["さんま", "サンマ", "秋刀魚"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 280, "proteinPerBase": 18.5, "defaultAmount": 1 },
-  { "keywords": ["うなぎ", "ウナギ", "鰻", "うな重", "うな丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 680, "proteinPerBase": 24.0, "defaultAmount": 1 },
-  { "keywords": ["エビ", "えび", "海老"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 90, "proteinPerBase": 19.0, "defaultAmount": 100 },
-  { "keywords": ["イカ", "いか", "タコ", "たこ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 85, "proteinPerBase": 17.5, "defaultAmount": 100 },
-  { "keywords": ["ツナ缶", "シーチキン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 70, "proteinPerBase": 12.0, "defaultAmount": 1 },
-  { "keywords": ["刺身", "お刺身"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 140, "proteinPerBase": 22.0, "defaultAmount": 1 },
-  { "keywords": ["寿司", "お寿司", "握り寿司"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 520, "proteinPerBase": 24.0, "defaultAmount": 1 },
-  { "keywords": ["めざし", "ししゃも"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 45, "proteinPerBase": 5.5, "defaultAmount": 2 },
-  { "keywords": ["ちくわ", "かまぼこ", "魚肉ソーセージ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 55, "proteinPerBase": 4.5, "defaultAmount": 1 },
-
-  { "keywords": ["卵", "たまご", "玉子", "ゆで卵", "目玉焼き", "生卵", "温泉卵"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 76, "proteinPerBase": 6.2, "defaultAmount": 1 },
-  { "keywords": ["卵焼き", "だし巻き卵", "スクランブルエッグ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 140, "proteinPerBase": 9.5, "defaultAmount": 1 },
-  { "keywords": ["茶碗蒸し"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 85, "proteinPerBase": 7.0, "defaultAmount": 1 },
-  { "keywords": ["納豆"], "unit": "pack", "baseAmount": 1, "kcalPerBase": 92, "proteinPerBase": 7.4, "defaultAmount": 1 },
-  { "keywords": ["豆腐", "木綿豆腐", "絹豆腐", "冷奴"], "unit": "gram", "baseAmount": 150, "kcalPerBase": 95, "proteinPerBase": 8.5, "defaultAmount": 150 },
-  { "keywords": ["厚揚げ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 150, "proteinPerBase": 10.5, "defaultAmount": 1 },
-  { "keywords": ["油揚げ", "がんもどき"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 90, "proteinPerBase": 5.0, "defaultAmount": 1 },
-  { "keywords": ["枝豆"], "unit": "gram", "baseAmount": 50, "kcalPerBase": 65, "proteinPerBase": 5.8, "defaultAmount": 50 },
-
-  { "keywords": ["回鍋肉", "ホイコーロー"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 390, "proteinPerBase": 16.5, "defaultAmount": 1 },
-  { "keywords": ["青椒肉絲", "チンジャオロース"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 330, "proteinPerBase": 18.0, "defaultAmount": 1 },
-  { "keywords": ["麻婆豆腐"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 340, "proteinPerBase": 18.0, "defaultAmount": 1 },
-  { "keywords": ["麻婆茄子", "マーボーナス"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 320, "proteinPerBase": 11.0, "defaultAmount": 1 },
-  { "keywords": ["エビチリ", "海老チリ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 280, "proteinPerBase": 17.5, "defaultAmount": 1 },
-  { "keywords": ["エビマヨ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 420, "proteinPerBase": 16.0, "defaultAmount": 1 },
-  { "keywords": ["酢豚", "すぶた"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 430, "proteinPerBase": 17.0, "defaultAmount": 1 },
-  { "keywords": ["八宝菜"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 260, "proteinPerBase": 14.0, "defaultAmount": 1 },
-  { "keywords": ["レバニラ", "レバニラ炒め", "ニラレバ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 310, "proteinPerBase": 21.0, "defaultAmount": 1 },
-  { "keywords": ["ニラ玉"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 220, "proteinPerBase": 12.5, "defaultAmount": 1 },
-  { "keywords": ["餃子", "ぎょうざ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 45, "proteinPerBase": 1.8, "defaultAmount": 5 },
-  { "keywords": ["焼売", "しゅうまい", "シュウマイ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 42, "proteinPerBase": 2.2, "defaultAmount": 4 },
-  { "keywords": ["春巻き"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 110, "proteinPerBase": 3.0, "defaultAmount": 2 },
-  { "keywords": ["肉まん", "あんまん", "中華まん"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 220, "proteinPerBase": 7.5, "defaultAmount": 1 },
-  { "keywords": ["天津飯", "中華丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 690, "proteinPerBase": 20.0, "defaultAmount": 1 },
-
-  { "keywords": ["カレー", "カレーライス"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 760, "proteinPerBase": 19.0, "defaultAmount": 1 },
-  { "keywords": ["ハヤシライス", "ビーフストロガノフ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 720, "proteinPerBase": 18.0, "defaultAmount": 1 },
-  { "keywords": ["シチュー", "クリームシチュー", "ビーフシチュー"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 340, "proteinPerBase": 14.0, "defaultAmount": 1 },
-  { "keywords": ["グラタン", "ドリア"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 540, "proteinPerBase": 19.0, "defaultAmount": 1 },
-  { "keywords": ["ロールキャベツ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 130, "proteinPerBase": 8.0, "defaultAmount": 2 },
-  { "keywords": ["ポトフ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 210, "proteinPerBase": 12.0, "defaultAmount": 1 },
-  { "keywords": ["ハンバーグ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 340, "proteinPerBase": 18.0, "defaultAmount": 1 },
-  { "keywords": ["唐揚げ", "からあげ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 85, "proteinPerBase": 5.2, "defaultAmount": 3 },
-  { "keywords": ["豚の生姜焼き", "生姜焼き"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 360, "proteinPerBase": 23.0, "defaultAmount": 1 },
-  { "keywords": ["とんかつ", "トンカツ", "チキンカツ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 480, "proteinPerBase": 24.0, "defaultAmount": 1 },
-  { "keywords": ["コロッケ", "メンチカツ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 190, "proteinPerBase": 5.0, "defaultAmount": 1 },
-  { "keywords": ["肉じゃが"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 230, "proteinPerBase": 9.0, "defaultAmount": 1 },
-  { "keywords": ["親子丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 680, "proteinPerBase": 28.0, "defaultAmount": 1 },
-  { "keywords": ["牛丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 730, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["カツ丼", "かつ丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 890, "proteinPerBase": 29.0, "defaultAmount": 1 },
-  { "keywords": ["天丼", "海鮮丼"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 750, "proteinPerBase": 22.0, "defaultAmount": 1 },
-  { "keywords": ["オムライス"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 700, "proteinPerBase": 21.0, "defaultAmount": 1 },
-  { "keywords": ["チャーハン", "炒飯", "ピラフ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 650, "proteinPerBase": 16.0, "defaultAmount": 1 },
-  { "keywords": ["お好み焼き"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 550, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["たこ焼き"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 45, "proteinPerBase": 1.6, "defaultAmount": 6 },
-  { "keywords": ["おでん"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 240, "proteinPerBase": 16.0, "defaultAmount": 1 },
-  { "keywords": ["すき焼き", "しゃぶしゃぶ", "鍋"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 480, "proteinPerBase": 28.0, "defaultAmount": 1 },
-  { "keywords": ["天ぷら", "かき揚げ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 320, "proteinPerBase": 8.0, "defaultAmount": 1 },
-  { "keywords": ["野菜炒め"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 180, "proteinPerBase": 7.0, "defaultAmount": 1 },
-  { "keywords": ["肉野菜炒め"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 290, "proteinPerBase": 15.0, "defaultAmount": 1 },
-  { "keywords": ["ひじき", "ひじきの煮物"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 70, "proteinPerBase": 2.5, "defaultAmount": 1 },
-  { "keywords": ["ほうれん草のおひたし", "おひたし", "ほうれん草", "小松菜"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 30, "proteinPerBase": 2.2, "defaultAmount": 1 },
-  { "keywords": ["きんぴらごぼう"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 85, "proteinPerBase": 1.2, "defaultAmount": 1 },
-  { "keywords": ["切り干し大根"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 75, "proteinPerBase": 1.8, "defaultAmount": 1 },
-  { "keywords": ["ポテトサラダ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 150, "proteinPerBase": 2.5, "defaultAmount": 1 },
-  { "keywords": ["マカロニサラダ", "スパゲティサラダ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 170, "proteinPerBase": 3.5, "defaultAmount": 1 },
-  { "keywords": ["かぼちゃの煮物", "かぼちゃ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 95, "proteinPerBase": 1.8, "defaultAmount": 1 },
-  { "keywords": ["筑前煮", "煮物"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 140, "proteinPerBase": 6.5, "defaultAmount": 1 },
-  { "keywords": ["春雨サラダ", "中華サラダ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 95, "proteinPerBase": 2.0, "defaultAmount": 1 },
-
-  { "keywords": ["みそ汁", "味噌汁"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 45, "proteinPerBase": 3.0, "defaultAmount": 1 },
-  { "keywords": ["豚汁"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 160, "proteinPerBase": 8.5, "defaultAmount": 1 },
-  { "keywords": ["コーンスープ", "ポタージュ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 90, "proteinPerBase": 2.0, "defaultAmount": 1 },
-  { "keywords": ["コンソメスープ", "ワカメスープ", "お吸い物", "卵スープ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 35, "proteinPerBase": 2.0, "defaultAmount": 1 },
-  { "keywords": ["サラダ", "野菜サラダ", "グリーンサラダ", "キャベツ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 65, "proteinPerBase": 1.5, "defaultAmount": 1 },
-  { "keywords": ["シーザーサラダ", "チキンサラダ"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 180, "proteinPerBase": 11.0, "defaultAmount": 1 },
-  { "keywords": ["大根おろし", "大根"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 18, "proteinPerBase": 0.5, "defaultAmount": 100 },
-  { "keywords": ["トマト", "ミニトマト"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 20, "proteinPerBase": 0.7, "defaultAmount": 100 },
-  { "keywords": ["きゅうり", "もやし", "白菜", "レタス"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 15, "proteinPerBase": 1.0, "defaultAmount": 100 },
-  { "keywords": ["キムチ"], "unit": "gram", "baseAmount": 50, "kcalPerBase": 23, "proteinPerBase": 1.0, "defaultAmount": 50 },
-  { "keywords": ["ブロッコリー"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 37, "proteinPerBase": 5.4, "defaultAmount": 100 },
-  { "keywords": ["さつまいも", "焼き芋", "ふかし芋"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 135, "proteinPerBase": 1.2, "defaultAmount": 120 },
-  { "keywords": ["じゃがいも", "フライドポテト"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 220, "proteinPerBase": 3.0, "defaultAmount": 100 },
-  { "keywords": ["アボカド"], "unit": "piece", "baseAmount": 0.5, "kcalPerBase": 130, "proteinPerBase": 1.8, "defaultAmount": 0.5 },
-
-  { "keywords": ["ギリシャヨーグルト", "オイコス"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 95, "proteinPerBase": 11.0, "defaultAmount": 1 },
-  { "keywords": ["ヨーグルト"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 62, "proteinPerBase": 3.6, "defaultAmount": 100 },
-  { "keywords": ["チーズ", "スライスチーズ", "ベビーチーズ", "カッテージチーズ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 55, "proteinPerBase": 3.5, "defaultAmount": 1 },
-  { "keywords": ["豆乳", "無調整豆乳", "調製豆乳"], "unit": "ml", "baseAmount": 200, "kcalPerBase": 100, "proteinPerBase": 7.5, "defaultAmount": 200 },
-  { "keywords": ["豆乳飲料", "フルーツ豆乳", "紅茶豆乳"], "unit": "ml", "baseAmount": 200, "kcalPerBase": 125, "proteinPerBase": 6.5, "defaultAmount": 200 },
-  { "keywords": ["牛乳", "低脂肪乳"], "unit": "ml", "baseAmount": 200, "kcalPerBase": 134, "proteinPerBase": 6.8, "defaultAmount": 200 },
-  { "keywords": ["プロテイン", "プロテインドリンク"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 120, "proteinPerBase": 20.0, "defaultAmount": 1 },
-  { "keywords": ["カフェラテ", "ミルクティー", "ココア"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 110, "proteinPerBase": 5.0, "defaultAmount": 1 },
-  { "keywords": ["紅茶", "緑茶", "麦茶", "ウーロン茶", "ジャスミン茶", "水", "炭酸水"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 0, "proteinPerBase": 0, "defaultAmount": 1 },
-  { "keywords": ["野菜ジュース", "スムージー"], "unit": "ml", "baseAmount": 200, "kcalPerBase": 80, "proteinPerBase": 1.2, "defaultAmount": 200 },
-  { "keywords": ["ビール", "発泡酒"], "unit": "ml", "baseAmount": 350, "kcalPerBase": 140, "proteinPerBase": 1.0, "defaultAmount": 350 },
-  { "keywords": ["ハイボール", "レモンサワー", "チューハイ"], "unit": "ml", "baseAmount": 350, "kcalPerBase": 180, "proteinPerBase": 0.0, "defaultAmount": 350 },
-  { "keywords": ["ワイン", "日本酒", "焼酎"], "unit": "serving", "baseAmount": 1, "kcalPerBase": 110, "proteinPerBase": 0.2, "defaultAmount": 1 },
-
-  { "keywords": ["バナナ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 86, "proteinPerBase": 1.1, "defaultAmount": 1 },
-  { "keywords": ["りんご", "リンゴ"], "unit": "piece", "baseAmount": 0.5, "kcalPerBase": 70, "proteinPerBase": 0.2, "defaultAmount": 0.5 },
-  { "keywords": ["みかん"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 45, "proteinPerBase": 0.7, "defaultAmount": 1 },
-  { "keywords": ["キウイ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 50, "proteinPerBase": 0.9, "defaultAmount": 1 },
-  { "keywords": ["いちご", "イチゴ"], "unit": "gram", "baseAmount": 100, "kcalPerBase": 34, "proteinPerBase": 0.9, "defaultAmount": 100 },
-  { "keywords": ["ブルーベリー"], "unit": "gram", "baseAmount": 50, "kcalPerBase": 25, "proteinPerBase": 0.3, "defaultAmount": 50 },
-  { "keywords": ["ナッツ", "アーモンド", "くるみ", "ミックスナッツ"], "unit": "gram", "baseAmount": 25, "kcalPerBase": 150, "proteinPerBase": 5.0, "defaultAmount": 25 },
-  { "keywords": ["チョコ", "チョコレート", "高カカオチョコ"], "unit": "gram", "baseAmount": 25, "kcalPerBase": 140, "proteinPerBase": 1.8, "defaultAmount": 25 },
-  { "keywords": ["クッキー", "ビスケット", "クラッカー"], "unit": "piece", "baseAmount": 3, "kcalPerBase": 130, "proteinPerBase": 2.0, "defaultAmount": 3 },
-  { "keywords": ["せんべい", "おかき", "あられ"], "unit": "piece", "baseAmount": 2, "kcalPerBase": 80, "proteinPerBase": 1.2, "defaultAmount": 2 },
-  { "keywords": ["プリン"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 150, "proteinPerBase": 4.5, "defaultAmount": 1 },
-  { "keywords": ["シュークリーム"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 220, "proteinPerBase": 4.5, "defaultAmount": 1 },
-  { "keywords": ["ケーキ", "ショートケーキ", "チーズケーキ"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 330, "proteinPerBase": 5.0, "defaultAmount": 1 },
-  { "keywords": ["どら焼き", "大福", "和菓子", "ようかん"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 180, "proteinPerBase": 3.5, "defaultAmount": 1 },
-  { "keywords": ["アイスクリーム", "アイス", "ソフトクリーム"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 200, "proteinPerBase": 3.0, "defaultAmount": 1 },
-  { "keywords": ["ゼリー", "寒天", "フルーツゼリー"], "unit": "piece", "baseAmount": 1, "kcalPerBase": 90, "proteinPerBase": 0.3, "defaultAmount": 1 },
-  { "keywords": ["ポテチ", "ポテトチップス"], "unit": "gram", "baseAmount": 60, "kcalPerBase": 330, "proteinPerBase": 2.8, "defaultAmount": 60 }
+  {
+    "keywords": ["白米", "ご飯", "ごはん"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 150,
+    "kcalPerBase": 156,
+    "proteinPerBase": 2.5
+  },
+  {
+    "keywords": ["五穀米", "雑穀米", "十六穀米"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 100,
+    "kcalPerBase": 160,
+    "proteinPerBase": 3.0
+  },
+  {
+    "keywords": ["麦ご飯", "もち麦ご飯", "もち麦"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 100,
+    "kcalPerBase": 150,
+    "proteinPerBase": 2.6
+  },
+  {
+    "keywords": ["マンナンヒカリ", "マンナンご飯"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 100,
+    "kcalPerBase": 115,
+    "proteinPerBase": 1.8
+  },
+  {
+    "keywords": ["おにぎり"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 180,
+    "proteinPerBase": 3.5
+  },
+  {
+    "keywords": ["食パン", "トースト"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 158,
+    "proteinPerBase": 5.3
+  },
+  {
+    "keywords": ["サンドイッチ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 320,
+    "proteinPerBase": 12.0
+  },
+  {
+    "keywords": ["ベイクドオーツ", "オートミール"],
+    "unit": "gram",
+    "baseAmount": 40,
+    "defaultAmount": 40,
+    "kcalPerBase": 155,
+    "proteinPerBase": 4.5
+  },
+  {
+    "keywords": ["ラーメン", "醤油ラーメン", "味噌ラーメン", "豚骨ラーメン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 520,
+    "proteinPerBase": 20.0
+  },
+  {
+    "keywords": ["うどん", "かけうどん", "きつねうどん"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 280,
+    "proteinPerBase": 7.5
+  },
+  {
+    "keywords": ["焼きそば"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 510,
+    "proteinPerBase": 15.0
+  },
+  {
+    "keywords": ["ミートソース", "ボロネーゼ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 590,
+    "proteinPerBase": 21.0
+  },
+  {
+    "keywords": ["ナポリタン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 610,
+    "proteinPerBase": 17.5
+  },
+  {
+    "keywords": ["パスタ", "スパゲッティ", "ペペロンチーノ", "カルボナーラ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 580,
+    "proteinPerBase": 18.0
+  },
+  {
+    "keywords": ["カレーライス", "カレー", "ビーフカレー", "ポークカレー", "チキンカレー"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 740,
+    "proteinPerBase": 19.0
+  },
+  {
+    "keywords": ["ハヤシライス"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 720,
+    "proteinPerBase": 17.0
+  },
+  {
+    "keywords": ["オムライス"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 690,
+    "proteinPerBase": 21.0
+  },
+  {
+    "keywords": ["チャーハン", "炒飯"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 630,
+    "proteinPerBase": 15.5
+  },
+  {
+    "keywords": ["牛丼"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 730,
+    "proteinPerBase": 20.0
+  },
+  {
+    "keywords": ["親子丼"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 640,
+    "proteinPerBase": 28.0
+  },
+  {
+    "keywords": ["カツ丼", "かつ丼"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 890,
+    "proteinPerBase": 29.0
+  },
+  {
+    "keywords": ["寿司", "お寿司", "にぎり寿司"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 520,
+    "proteinPerBase": 26.0
+  },
+  {
+    "keywords": ["刺身", "お刺身", "刺身盛り合わせ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 160,
+    "proteinPerBase": 24.0
+  },
+  {
+    "keywords": ["ハンバーグ", "煮込みハンバーグ", "チーズハンバーグ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 390,
+    "proteinPerBase": 21.0
+  },
+  {
+    "keywords": ["生姜焼き", "豚の生姜焼き"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 360,
+    "proteinPerBase": 22.0
+  },
+  {
+    "keywords": ["とんかつ", "トンカツ", "ロースカツ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 460,
+    "proteinPerBase": 23.0
+  },
+  {
+    "keywords": ["チキン南蛮"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 540,
+    "proteinPerBase": 25.0
+  },
+  {
+    "keywords": ["鶏の照り焼き", "照り焼きチキン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 330,
+    "proteinPerBase": 24.0
+  },
+  {
+    "keywords": ["唐揚げ", "からあげ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 3,
+    "kcalPerBase": 85,
+    "proteinPerBase": 5.5
+  },
+  {
+    "keywords": ["焼き鳥", "やきとり"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 3,
+    "kcalPerBase": 75,
+    "proteinPerBase": 7.5
+  },
+  {
+    "keywords": ["回鍋肉", "ホイコーロー"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 410,
+    "proteinPerBase": 16.0
+  },
+  {
+    "keywords": ["青椒肉絲", "チンジャオロース"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 320,
+    "proteinPerBase": 18.0
+  },
+  {
+    "keywords": ["麻婆豆腐", "マーボー豆腐"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 350,
+    "proteinPerBase": 19.0
+  },
+  {
+    "keywords": ["野菜炒め", "肉野菜炒め"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 260,
+    "proteinPerBase": 13.0
+  },
+  {
+    "keywords": ["餃子", "焼き餃子"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 5,
+    "kcalPerBase": 45,
+    "proteinPerBase": 2.0
+  },
+  {
+    "keywords": ["焼売", "シュウマイ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 4,
+    "kcalPerBase": 55,
+    "proteinPerBase": 2.7
+  },
+  {
+    "keywords": ["ロールキャベツ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 130,
+    "proteinPerBase": 8.0
+  },
+  {
+    "keywords": ["シチュー", "クリームシチュー", "ビーフシチュー"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 340,
+    "proteinPerBase": 14.0
+  },
+  {
+    "keywords": ["肉じゃが"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 260,
+    "proteinPerBase": 10.5
+  },
+  {
+    "keywords": ["筑前煮", "がめ煮"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 190,
+    "proteinPerBase": 11.0
+  },
+  {
+    "keywords": ["おでん"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 280,
+    "proteinPerBase": 18.0
+  },
+  {
+    "keywords": ["鍋", "寄せ鍋", "水炊き", "キムチ鍋", "豆乳鍋"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 420,
+    "proteinPerBase": 32.0
+  },
+  {
+    "keywords": ["グラタン", "マカロニグラタン", "ドリア"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 490,
+    "proteinPerBase": 18.0
+  },
+  {
+    "keywords": ["ピザ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 210,
+    "proteinPerBase": 8.5
+  },
+  {
+    "keywords": ["コロッケ", "ポテトコロッケ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 190,
+    "proteinPerBase": 3.5
+  },
+  {
+    "keywords": ["アジフライ", "白身魚フライ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 210,
+    "proteinPerBase": 12.0
+  },
+  {
+    "keywords": ["イカフライ", "イカの揚げ物", "いかリング"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 95,
+    "proteinPerBase": 5.0
+  },
+  {
+    "keywords": ["焼き鮭", "鮭", "サーモン", "塩鮭"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 135,
+    "proteinPerBase": 20.0
+  },
+  {
+    "keywords": ["サバ", "鯖", "サバの塩焼き", "サバの味噌煮", "さば"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 250,
+    "proteinPerBase": 20.5
+  },
+  {
+    "keywords": ["めざし", "ししゃも"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 3,
+    "kcalPerBase": 35,
+    "proteinPerBase": 4.2
+  },
+  {
+    "keywords": ["ひじき", "ひじきの煮物"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 85,
+    "proteinPerBase": 3.5
+  },
+  {
+    "keywords": ["切り干し大根"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 75,
+    "proteinPerBase": 2.2
+  },
+  {
+    "keywords": ["きんぴらごぼう", "きんぴら"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 90,
+    "proteinPerBase": 1.5
+  },
+  {
+    "keywords": ["ほうれん草のお浸し", "お浸し", "ほうれん草"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 35,
+    "proteinPerBase": 2.4
+  },
+  {
+    "keywords": ["ポテトサラダ", "ポテサラ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 145,
+    "proteinPerBase": 2.5
+  },
+  {
+    "keywords": ["カプレーゼ", "トマトサラダ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 160,
+    "proteinPerBase": 7.0
+  },
+  {
+    "keywords": ["トマト"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 30,
+    "proteinPerBase": 1.1
+  },
+  {
+    "keywords": ["にんじん", "人参", "キャロットラペ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 55,
+    "proteinPerBase": 0.8
+  },
+  {
+    "keywords": ["サラダ", "野菜サラダ", "生野菜"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 30,
+    "proteinPerBase": 1.2
+  },
+  {
+    "keywords": ["ブロッコリー"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 80,
+    "kcalPerBase": 37,
+    "proteinPerBase": 5.4
+  },
+  {
+    "keywords": ["味噌汁", "みそ汁", "具だくさん味噌汁", "豚汁"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 65,
+    "proteinPerBase": 3.5
+  },
+  {
+    "keywords": ["コーンスープ", "ポタージュ", "コンソメスープ", "中華スープ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 85,
+    "proteinPerBase": 2.0
+  },
+  {
+    "keywords": ["卵焼き", "玉子焼き", "だし巻き卵"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 45,
+    "proteinPerBase": 2.8
+  },
+  {
+    "keywords": ["ゆで卵", "ゆでたまご", "目玉焼き", "生卵", "卵"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 76,
+    "proteinPerBase": 6.2
+  },
+  {
+    "keywords": ["納豆"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 90,
+    "proteinPerBase": 7.4
+  },
+  {
+    "keywords": ["豆腐", "冷奴", "木綿豆腐", "絹ごし豆腐"],
+    "unit": "gram",
+    "baseAmount": 150,
+    "defaultAmount": 150,
+    "kcalPerBase": 84,
+    "proteinPerBase": 7.5
+  },
+  {
+    "keywords": ["サラダチキン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 115,
+    "proteinPerBase": 24.0
+  },
+  {
+    "keywords": ["鶏むね肉", "鶏胸肉", "むね肉"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 100,
+    "kcalPerBase": 116,
+    "proteinPerBase": 23.3
+  },
+  {
+    "keywords": ["ソーセージ", "ウインナー"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 65,
+    "proteinPerBase": 2.6
+  },
+  {
+    "keywords": ["無調整豆乳", "豆乳"],
+    "unit": "ml",
+    "baseAmount": 200,
+    "defaultAmount": 200,
+    "kcalPerBase": 92,
+    "proteinPerBase": 8.0
+  },
+  {
+    "keywords": ["ザバス", "ホエイプロテイン", "プロテイン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 83,
+    "proteinPerBase": 15.0
+  },
+  {
+    "keywords": ["ビオフィックス", "ヨーグルト", "無糖ヨーグルト"],
+    "unit": "gram",
+    "baseAmount": 100,
+    "defaultAmount": 100,
+    "kcalPerBase": 62,
+    "proteinPerBase": 3.6
+  },
+  {
+    "keywords": ["オイコス", "ギリシャヨーグルト"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 92,
+    "proteinPerBase": 10.1
+  },
+  {
+    "keywords": ["ブルーベリー"],
+    "unit": "gram",
+    "baseAmount": 50,
+    "defaultAmount": 50,
+    "kcalPerBase": 25,
+    "proteinPerBase": 0.3
+  },
+  {
+    "keywords": ["バナナ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 86,
+    "proteinPerBase": 1.1
+  },
+  {
+    "keywords": ["ケーキ", "ショートケーキ", "チーズケーキ", "モンブラン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 350,
+    "proteinPerBase": 5.0
+  },
+  {
+    "keywords": ["シュークリーム"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 230,
+    "proteinPerBase": 4.5
+  },
+  {
+    "keywords": ["プリン"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 150,
+    "proteinPerBase": 4.5
+  },
+  {
+    "keywords": ["アイスクリーム", "アイス"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 210,
+    "proteinPerBase": 3.5
+  },
+  {
+    "keywords": ["チョコレート", "チョコ", "高カカオチョコ"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 2,
+    "kcalPerBase": 28,
+    "proteinPerBase": 0.4
+  },
+  {
+    "keywords": ["プロテインバー"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 185,
+    "proteinPerBase": 15.0
+  }
 ]
