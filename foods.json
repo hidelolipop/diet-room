@@ -1,5 +1,13 @@
 [
   {
+    "keywords": ["いつもの朝食セット"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 259,
+    "proteinPerBase": 18.2
+  },
+  {
     "keywords": ["白米", "ご飯", "ごはん"],
     "unit": "gram",
     "baseAmount": 100,
