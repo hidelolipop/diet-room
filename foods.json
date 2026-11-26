@@ -8,6 +8,14 @@
     "proteinPerBase": 18.2
   },
   {
+    "keywords": ["手作りお弁当"],
+    "unit": "unit",
+    "baseAmount": 1,
+    "defaultAmount": 1,
+    "kcalPerBase": 500,
+    "proteinPerBase": 25.0
+  },
+  {
     "keywords": ["白米", "ご飯", "ごはん"],
     "unit": "gram",
     "baseAmount": 100,
