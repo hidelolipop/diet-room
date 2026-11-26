@@ -690,7 +690,7 @@
       <form id="weightForm" class="form-grid">
         <div>
           <label for="weightDate">日付</label>
-          <input type="date" id="weightDate" value="2026-11-25" />
+          <input type="date" id="weightDate" value="2026-11-26" />
         </div>
         <div>
           <label for="weightInput">体重 (kg)</label>
@@ -725,7 +725,7 @@
       </div>
       <div class="date-nav-bar">
         <button type="button" class="date-step-btn" onclick="stepMealDate(-1)">← 前日</button>
-        <input type="date" id="mealDateInput" value="2026-11-25" onchange="renderMealView()" />
+        <input type="date" id="mealDateInput" value="2026-11-26" onchange="renderMealView()" />
         <button type="button" class="date-step-btn" onclick="stepMealDate(1)">翌日 →</button>
       </div>
       <div class="summary-pair">
@@ -793,8 +793,8 @@
           <div style="font-size:20px; font-weight:700;">-- 日</div>
         </div>
         <div class="training-stat-box">
-          <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
-          <div style="font-size:20px; font-weight:700;">-- kg</div>
+          <div style="font-size:11px; color:var(--text-sub);">今日の消費カロリー</div>
+          <div style="font-size:20px; font-weight:700;">-- kcal</div>
         </div>
       </div>
 
@@ -1045,9 +1045,59 @@
       return "";
     }
 
+    /* どんな形式の日付でも YYYY-MM-DD に変換 */
+    function normalizeDateKey(rawDate) {
+      if (rawDate === null || rawDate === undefined || rawDate === "") return "";
+
+      if (typeof rawDate === "number" && rawDate > 30000) {
+        const ms = Math.round((rawDate - 25569) * 86400 * 1000);
+        const dt = new Date(ms);
+        if (!isNaN(dt.getTime())) {
+          return formatLocalYmd(dt);
+        }
+      }
+
+      const str = String(rawDate).trim();
+
+      if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+        const dt = new Date(str);
+        if (!isNaN(dt.getTime())) {
+          return formatLocalYmd(dt);
+        }
+      }
+
+      const ymdMatch = str.match(/(\d{4})[\/\-年.](\d{1,2})[\/\-月.](\d{1,2})/);
+      if (ymdMatch) {
+        const y = ymdMatch[1];
+        const m = String(ymdMatch[2]).padStart(2, "0");
+        const d = String(ymdMatch[3]).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      const mdMatch = str.match(/(?:^|[^\d])(\d{1,2})[\/\-月.](\d{1,2})(?:$|[^\d])/);
+      if (mdMatch) {
+        const y = String(new Date().getFullYear());
+        const m = String(mdMatch[1]).padStart(2, "0");
+        const d = String(mdMatch[2]).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      return "";
+    }
+
     function normalizeWorkoutItem(raw) {
       if (!raw || typeof raw !== "object") return null;
-      const dateVal = pickField(raw, ["date", "日付", "実施日", "記録日"]);
+
+      let dateVal = pickField(raw, ["date", "日付", "実施日", "記録日", "日時", "Date"]);
+      if (!dateVal) {
+        for (const val of Object.values(raw)) {
+          if (normalizeDateKey(val)) {
+            dateVal = val;
+            break;
+          }
+        }
+      }
+
       const locationVal = pickField(raw, ["location", "場所", "ジム", "エリア"]);
       const exerciseVal = pickField(raw, ["exercise", "種目", "メニュー", "運動", "運動名", "項目"]);
       const weightVal = pickField(raw, ["weight", "重量", "重さ", "kg"]);
@@ -1060,7 +1110,7 @@
       if (!dateVal && !exerciseVal && !memoVal && !calVal) return null;
 
       return {
-        date: String(dateVal || ""),
+        date: normalizeDateKey(dateVal) || String(dateVal || ""),
         location: String(locationVal || ""),
         exercise: String(exerciseVal || ""),
         weight: parseNumLoose(weightVal),
@@ -1253,25 +1303,6 @@
         return Math.round(vol * 0.05);
       }
       return 30;
-    }
-
-    function normalizeDateKey(rawDate) {
-      const str = String(rawDate || "").trim();
-      const ymdMatch = str.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
-      if (ymdMatch) {
-        const y = ymdMatch[1];
-        const m = String(ymdMatch[2]).padStart(2, "0");
-        const d = String(ymdMatch[3]).padStart(2, "0");
-        return `${y}-${m}-${d}`;
-      }
-      const mdMatch = str.match(/^(\d{1,2})[\/\-月](\d{1,2})/);
-      if (mdMatch) {
-        const y = String(new Date().getFullYear());
-        const m = String(mdMatch[1]).padStart(2, "0");
-        const d = String(mdMatch[2]).padStart(2, "0");
-        return `${y}-${m}-${d}`;
-      }
-      return "";
     }
 
     function getExerciseBurnForDate(ymd) {
@@ -1687,13 +1718,14 @@
 
         const sessionCount = history.length;
         const dateSet = new Set();
-        let totalVolume = 0;
 
         history.forEach((item) => {
-          totalVolume += calcItemVolume(item);
           const normDate = normalizeDateKey(item.date);
           if (normDate) dateSet.add(normDate);
         });
+
+        const todayKey = formatLocalYmd(new Date());
+        const todayBurnExtra = getExerciseBurnForDate(todayKey);
 
         if (statsEl) {
           statsEl.innerHTML = `
@@ -1706,8 +1738,8 @@
               <div style="font-size:20px; font-weight:700;">${dateSet.size} 日</div>
             </div>
             <div class="training-stat-box">
-              <div style="font-size:11px; color:var(--text-sub);">総ボリューム</div>
-              <div style="font-size:20px; font-weight:700;">${Math.round(totalVolume).toLocaleString()} kg</div>
+              <div style="font-size:11px; color:var(--text-sub);">今日の消費カロリー</div>
+              <div style="font-size:20px; font-weight:700;">${todayBurnExtra.toLocaleString()} kcal</div>
             </div>
           `;
         }
@@ -1718,7 +1750,8 @@
           } else {
             const recent = [...history].reverse().slice(0, 10);
             listEl.innerHTML = recent.map((item) => {
-              const shortDate = item.date ? String(item.date).slice(5) : "";
+              const norm = normalizeDateKey(item.date);
+              const shortDate = norm ? norm.slice(5) : (item.date ? String(item.date).slice(5) : "");
               const loc = item.location ? `${item.location}・` : "";
               const detail = formatWorkoutDetail(item);
               return `
@@ -1740,8 +1773,6 @@
 
         updateDailyCaloriesSummary();
         updateDynamicEncouragement(true);
-        const todayKey = formatLocalYmd(new Date());
-        const todayBurnExtra = getExerciseBurnForDate(todayKey);
         if (statusEl) statusEl.textContent = `運動管理 同期完了（${sessionCount}件）`;
         if (mealStatusEl) mealStatusEl.textContent = "食事管理 同期完了";
         if (weightStatusEl) weightStatusEl.textContent = "体重管理 同期完了";
