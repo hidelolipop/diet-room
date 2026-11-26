@@ -63,7 +63,7 @@
     .char-pair {
       position: absolute;
       left: 50%;
-      bottom: 2%;
+      bottom: -5%;
       transform: translateX(-50%);
       display: flex;
       align-items: flex-end;
@@ -73,9 +73,9 @@
     }
 
     .char-stage {
-      width: 235px;
-      max-width: 34vw;
-      min-width: 125px;
+      width: 245px;
+      max-width: 35vw;
+      min-width: 130px;
       aspect-ratio: 1 / 1;
       display: flex;
       align-items: flex-end;
@@ -90,20 +90,6 @@
       display: block;
       background: transparent;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
-    }
-
-    .room-tap-hint {
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
     .status-top {
@@ -621,7 +607,7 @@
 </head>
 <body>
   <div class="app-wrap">
-    <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋（タッチで応援）" onclick="triggerCharactersCheer()">
+    <section class="room-box" id="roomHeaderBox" aria-label="ジムのお部屋" onclick="triggerCharactersCheer()">
       <div class="char-pair">
         <div class="char-stage" id="hideStage">
           <img id="hideGifImg" class="char-gif-img" src="./hide.gif" alt="ヒデちゃん" />
@@ -630,7 +616,6 @@
           <img id="mokoGifImg" class="char-gif-img" src="./moko_cheer.gif" alt="モコちゃん" />
         </div>
       </div>
-      <span class="room-tap-hint" id="roomTapHint">📣 タッチで応援！</span>
     </section>
 
     <section class="card" aria-label="時刻と摂取・消費カロリー">
@@ -730,7 +715,6 @@
       </div>
     </section>
 
-    <!-- 6. 体重管理（編集・削除対応） -->
     <section class="card" id="weightCard">
       <div class="section-top">
         <h2 class="section-title">体重管理</h2>
@@ -766,7 +750,6 @@
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
-    <!-- 7. 食事管理（編集・削除対応） -->
     <section class="card" id="mealCard">
       <div class="section-top">
         <h2 class="section-title">食事管理</h2>
@@ -912,26 +895,19 @@
     function triggerCharactersCheer() {
       const hideImg = document.getElementById("hideGifImg");
       const mokoImg = document.getElementById("mokoGifImg");
-      const hint = document.getElementById("roomTapHint");
       const ts = Date.now();
 
       if (hideImg) hideImg.src = "./hide.gif?t=" + ts;
       if (mokoImg) mokoImg.src = "./moko_cheer.gif?t=" + ts;
-      if (hint) hint.textContent = "🎉 応援中！";
 
       cycleEncouragement();
-
-      setTimeout(() => {
-        if (hint) hint.textContent = "📣 タッチで応援！";
-      }, 2500);
     }
 
     let FOOD_DICTIONARY = [];
     let manualEdited = { cal: false, protein: false };
 
-    // 編集状態管理
     let editingWeightIndex = null;
-    let editingMealTarget = null; // { ymd, index }
+    let editingMealTarget = null;
 
     function markManualNutritionEdit(field) {
       manualEdited[field] = true;
@@ -1447,7 +1423,6 @@
       });
     }
 
-    /* 食事：編集開始 */
     function startMealEdit(ymd, idx) {
       const list = appState.mealLogsByDate[ymd];
       if (!Array.isArray(list) || !list[idx]) return;
@@ -1467,7 +1442,6 @@
       document.getElementById("mealForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
-    /* 食事：編集キャンセル */
     function cancelMealEdit() {
       editingMealTarget = null;
       document.getElementById("mealForm").reset();
@@ -1478,7 +1452,6 @@
       document.getElementById("mealCancelEditBtn").style.display = "none";
     }
 
-    /* 食事：削除 */
     async function deleteMealItem(ymd, idx) {
       const list = appState.mealLogsByDate[ymd];
       if (!Array.isArray(list) || !list[idx]) return;
@@ -1623,7 +1596,6 @@
       updateDynamicEncouragement(true);
     }
 
-    /* 体重：編集開始 */
     function startWeightEdit(idx) {
       const row = appState.weightLogs[idx];
       if (!row) return;
@@ -1641,7 +1613,6 @@
       document.getElementById("weightForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
-    /* 体重：編集キャンセル */
     function cancelWeightEdit() {
       editingWeightIndex = null;
       document.getElementById("weightForm").reset();
@@ -1651,7 +1622,6 @@
       document.getElementById("weightCancelEditBtn").style.display = "none";
     }
 
-    /* 体重：削除 */
     async function deleteWeightItem(idx) {
       const row = appState.weightLogs[idx];
       if (!row) return;
@@ -1727,7 +1697,6 @@
       return true;
     }
 
-    /* 体重フォーム送信（新規 or 修正） */
     document.getElementById("weightForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const date = document.getElementById("weightDate").value || formatLocalYmd(new Date());
@@ -1826,7 +1795,6 @@
       document.getElementById("weightDate").value = date;
     });
 
-    /* 食事フォーム送信（新規 or 修正） */
     document.getElementById("mealForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
