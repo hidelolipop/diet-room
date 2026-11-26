@@ -488,6 +488,18 @@
       color: var(--accent-dark);
     }
 
+    .edit-mode-banner {
+      display: none;
+      background: #fff3cd;
+      border: 1px solid #ffe08a;
+      color: #7c5800;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
     .summary-pair {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -500,6 +512,13 @@
       border-radius: 12px;
       padding: 12px;
       font-size: 13px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     .btn-primary {
@@ -529,6 +548,27 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+    }
+
+    .mini-action-btn {
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .mini-action-btn:hover {
+      background: var(--bg-chip-active);
+      border-color: var(--accent);
+    }
+
+    .mini-action-btn.del:hover {
+      background: #ffe5e5;
+      border-color: #d9534f;
+      color: #b52b27;
     }
 
     .training-stats {
@@ -562,6 +602,14 @@
       padding: 10px 0;
       border-top: 1px solid var(--border);
       font-size: 13px;
+    }
+
+    .history-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .sync-note {
@@ -682,11 +730,13 @@
       </div>
     </section>
 
+    <!-- 6. 体重管理（編集・削除対応） -->
     <section class="card" id="weightCard">
       <div class="section-top">
         <h2 class="section-title">体重管理</h2>
         <span id="weightSyncStatus" style="font-size:12px; color:var(--text-sub);">体重管理</span>
       </div>
+      <div class="edit-mode-banner" id="weightEditBanner">✏️ 過去の体重記録を編集中です（内容を直して「更新を保存する」を押してください）</div>
       <form id="weightForm" class="form-grid">
         <div>
           <label for="weightDate">日付</label>
@@ -708,13 +758,15 @@
           <label for="weightMemo">メモ</label>
           <input type="text" id="weightMemo" placeholder="朝の記録・体調など" />
         </div>
-        <div style="grid-column: 1 / -1;">
-          <button type="submit" class="btn-primary">記録する</button>
+        <div class="btn-row" style="grid-column: 1 / -1;">
+          <button type="submit" class="btn-primary" id="weightSubmitBtn">記録する</button>
+          <button type="button" class="btn-secondary" id="weightCancelEditBtn" style="display:none;" onclick="cancelWeightEdit()">キャンセル</button>
         </div>
       </form>
       <div id="weightHistory" style="margin-top:14px;"></div>
     </section>
 
+    <!-- 7. 食事管理（編集・削除対応） -->
     <section class="card" id="mealCard">
       <div class="section-top">
         <h2 class="section-title">食事管理</h2>
@@ -725,7 +777,7 @@
       </div>
       <div class="date-nav-bar">
         <button type="button" class="date-step-btn" onclick="stepMealDate(-1)">← 前日</button>
-        <input type="date" id="mealDateInput" value="2026-11-26" onchange="renderMealView()" />
+        <input type="date" id="mealDateInput" value="2026-11-26" onchange="cancelMealEdit(); renderMealView();" />
         <button type="button" class="date-step-btn" onclick="stepMealDate(1)">翌日 →</button>
       </div>
       <div class="summary-pair">
@@ -733,10 +785,10 @@
         <div class="summary-box">たんぱく質<br /><strong id="mealTotalProtein">-- g</strong></div>
       </div>
       <div class="meal-pills" id="mealPills">
-        <button type="button" class="meal-pill active" onclick="selectMeal(this, '朝食')">朝食</button>
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '昼食')">昼食</button>
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '夕食')">夕食</button>
-        <button type="button" class="meal-pill" onclick="selectMeal(this, '間食')">間食</button>
+        <button type="button" class="meal-pill active" data-meal="朝食" onclick="selectMeal(this, '朝食')">朝食</button>
+        <button type="button" class="meal-pill" data-meal="昼食" onclick="selectMeal(this, '昼食')">昼食</button>
+        <button type="button" class="meal-pill" data-meal="夕食" onclick="selectMeal(this, '夕食')">夕食</button>
+        <button type="button" class="meal-pill" data-meal="間食" onclick="selectMeal(this, '間食')">間食</button>
       </div>
 
       <div class="preset-row" aria-label="よく食べるメニュークイック入力">
@@ -747,6 +799,8 @@
         <button type="button" class="preset-btn" onclick="applyFoodPreset('サラダチキン 1個')">🥗 サラダチキン</button>
         <button type="button" class="preset-btn" onclick="applyFoodPreset('バナナ 1本')">🍌 バナナ 1本</button>
       </div>
+
+      <div class="edit-mode-banner" id="mealEditBanner">✏️ 食事記録を編集中です（内容を直して「更新を保存する」を押してください）</div>
 
       <form id="mealForm" class="form-grid">
         <div style="grid-column: 1 / -1;">
@@ -770,8 +824,9 @@
           <label for="mealMemo">メモ</label>
           <input type="text" id="mealMemo" placeholder="外食・自炊など" />
         </div>
-        <div style="grid-column: 1 / -1;">
-          <button type="submit" class="btn-primary">追加する</button>
+        <div class="btn-row" style="grid-column: 1 / -1;">
+          <button type="submit" class="btn-primary" id="mealSubmitBtn">追加する</button>
+          <button type="button" class="btn-secondary" id="mealCancelEditBtn" style="display:none;" onclick="cancelMealEdit()">キャンセル</button>
         </div>
       </form>
       <div id="mealList" style="margin-top:12px; font-size:13px; color:var(--text-sub);"></div>
@@ -873,6 +928,10 @@
 
     let FOOD_DICTIONARY = [];
     let manualEdited = { cal: false, protein: false };
+
+    // 編集状態管理
+    let editingWeightIndex = null;
+    let editingMealTarget = null; // { ymd, index }
 
     function markManualNutritionEdit(field) {
       manualEdited[field] = true;
@@ -1045,7 +1104,6 @@
       return "";
     }
 
-    /* どんな形式の日付でも YYYY-MM-DD に変換 */
     function normalizeDateKey(rawDate) {
       if (rawDate === null || rawDate === undefined || rawDate === "") return "";
 
@@ -1362,11 +1420,13 @@
     }
 
     function resetMealDateToToday() {
+      cancelMealEdit();
       document.getElementById("mealDateInput").value = formatLocalYmd(new Date());
       renderMealView();
     }
 
     function stepMealDate(offsetDays) {
+      cancelMealEdit();
       const input = document.getElementById("mealDateInput");
       const base = input.value ? new Date(input.value + "T00:00:00") : new Date();
       base.setDate(base.getDate() + offsetDays);
@@ -1378,6 +1438,79 @@
       selectedMealType = label;
       document.querySelectorAll(".meal-pill").forEach((el) => el.classList.remove("active"));
       btn.classList.add("active");
+    }
+
+    function setMealPillByLabel(label) {
+      selectedMealType = label || "朝食";
+      document.querySelectorAll(".meal-pill").forEach((el) => {
+        el.classList.toggle("active", el.getAttribute("data-meal") === selectedMealType);
+      });
+    }
+
+    /* 食事：編集開始 */
+    function startMealEdit(ymd, idx) {
+      const list = appState.mealLogsByDate[ymd];
+      if (!Array.isArray(list) || !list[idx]) return;
+      const item = list[idx];
+
+      editingMealTarget = { ymd, index: idx };
+      setMealPillByLabel(item.mealType || "朝食");
+      document.getElementById("mealMenu").value = item.menu || "";
+      document.getElementById("mealCal").value = item.cal || "";
+      document.getElementById("mealProtein").value = item.protein || "";
+      document.getElementById("mealMemo").value = item.memo || "";
+      manualEdited = { cal: true, protein: true };
+
+      document.getElementById("mealEditBanner").style.display = "block";
+      document.getElementById("mealSubmitBtn").textContent = "更新を保存する";
+      document.getElementById("mealCancelEditBtn").style.display = "inline-flex";
+      document.getElementById("mealForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    /* 食事：編集キャンセル */
+    function cancelMealEdit() {
+      editingMealTarget = null;
+      document.getElementById("mealForm").reset();
+      manualEdited = { cal: false, protein: false };
+      handleMealMenuInput();
+      document.getElementById("mealEditBanner").style.display = "none";
+      document.getElementById("mealSubmitBtn").textContent = "追加する";
+      document.getElementById("mealCancelEditBtn").style.display = "none";
+    }
+
+    /* 食事：削除 */
+    async function deleteMealItem(ymd, idx) {
+      const list = appState.mealLogsByDate[ymd];
+      if (!Array.isArray(list) || !list[idx]) return;
+      const target = list[idx];
+      if (!confirm(`「[${target.mealType}] ${target.menu}」を削除しますか？`)) return;
+
+      if (editingMealTarget && editingMealTarget.ymd === ymd && editingMealTarget.index === idx) {
+        cancelMealEdit();
+      }
+
+      list.splice(idx, 1);
+      if (list.length === 0) {
+        delete appState.mealLogsByDate[ymd];
+      }
+
+      saveState();
+      renderMealView();
+      updateDailyCaloriesSummary();
+
+      if (target.rowNumber) {
+        const statusEl = document.getElementById("mealSyncStatus");
+        if (statusEl) statusEl.textContent = "食事管理から削除中...";
+        try {
+          await postToGas({
+            type: "delete_meal",
+            rowNumber: target.rowNumber
+          });
+          setTimeout(() => syncAllFromSheet(), 900);
+        } catch (err) {
+          if (statusEl) statusEl.textContent = "削除エラー";
+        }
+      }
     }
 
     function renderMealView() {
@@ -1397,7 +1530,7 @@
         return;
       }
 
-      listEl.innerHTML = [...list].reverse().map((item) => {
+      listEl.innerHTML = list.map((item, idx) => ({ item, idx })).reverse().map(({ item, idx }) => {
         const subText = [
           item.cal ? `${Number(item.cal).toLocaleString()} kcal` : "",
           item.protein ? `P ${Number(item.protein).toFixed(1)}g` : "",
@@ -1405,11 +1538,42 @@
         ].filter(Boolean).join(" / ");
         return `
           <div class="history-item">
-            <span><strong>[${item.mealType}]</strong> ${item.menu || "食事"}</span>
-            <span style="color:var(--text-sub); text-align:right;">${subText}</span>
+            <div>
+              <div><strong>[${item.mealType}]</strong> ${item.menu || "食事"}</div>
+              <div style="font-size:12px; color:var(--text-sub);">${subText}</div>
+            </div>
+            <div class="history-right">
+              <button type="button" class="mini-action-btn" onclick="startMealEdit('${ymd}', ${idx})">編集</button>
+              <button type="button" class="mini-action-btn del" onclick="deleteMealItem('${ymd}', ${idx})">削除</button>
+            </div>
           </div>
         `;
       }).join("");
+    }
+
+    function syncLatestBodyMetricsFromLogs() {
+      if (!appState.weightLogs.length) return;
+      const sorted = [...appState.weightLogs].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        if (sorted[i].weight !== null && sorted[i].weight !== undefined && sorted[i].weight > 0) {
+          appState.currentWeight = sorted[i].weight;
+          break;
+        }
+      }
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        if (sorted[i].bodyFat !== null && sorted[i].bodyFat !== undefined && sorted[i].bodyFat > 0) {
+          appState.currentBodyFat = sorted[i].bodyFat;
+          break;
+        }
+      }
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        if (sorted[i].muscleMass !== null && sorted[i].muscleMass !== undefined && sorted[i].muscleMass > 0) {
+          appState.muscleMass = sorted[i].muscleMass;
+          const mInput = document.getElementById("muscleMassInput");
+          if (mInput) mInput.value = sorted[i].muscleMass;
+          break;
+        }
+      }
     }
 
     function refreshProgress() {
@@ -1459,13 +1623,73 @@
       updateDynamicEncouragement(true);
     }
 
+    /* 体重：編集開始 */
+    function startWeightEdit(idx) {
+      const row = appState.weightLogs[idx];
+      if (!row) return;
+
+      editingWeightIndex = idx;
+      document.getElementById("weightDate").value = row.date || formatLocalYmd(new Date());
+      document.getElementById("weightInput").value = (row.weight !== null && row.weight !== undefined) ? row.weight : "";
+      document.getElementById("bodyFatInput").value = (row.bodyFat !== null && row.bodyFat !== undefined) ? row.bodyFat : "";
+      document.getElementById("muscleInput").value = (row.muscleMass !== null && row.muscleMass !== undefined) ? row.muscleMass : "";
+      document.getElementById("weightMemo").value = row.memo && row.memo !== "記録済み" ? row.memo : "";
+
+      document.getElementById("weightEditBanner").style.display = "block";
+      document.getElementById("weightSubmitBtn").textContent = "更新を保存する";
+      document.getElementById("weightCancelEditBtn").style.display = "inline-flex";
+      document.getElementById("weightForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    /* 体重：編集キャンセル */
+    function cancelWeightEdit() {
+      editingWeightIndex = null;
+      document.getElementById("weightForm").reset();
+      document.getElementById("weightDate").value = formatLocalYmd(new Date());
+      document.getElementById("weightEditBanner").style.display = "none";
+      document.getElementById("weightSubmitBtn").textContent = "記録する";
+      document.getElementById("weightCancelEditBtn").style.display = "none";
+    }
+
+    /* 体重：削除 */
+    async function deleteWeightItem(idx) {
+      const row = appState.weightLogs[idx];
+      if (!row) return;
+      const shortDate = formatShortDateWithDay(row.date);
+      if (!confirm(`${shortDate} の体重記録を削除しますか？`)) return;
+
+      if (editingWeightIndex === idx) {
+        cancelWeightEdit();
+      }
+
+      appState.weightLogs.splice(idx, 1);
+      syncLatestBodyMetricsFromLogs();
+      saveState();
+      renderWeightHistory();
+      refreshProgress();
+
+      if (row.rowNumber) {
+        const statusEl = document.getElementById("weightSyncStatus");
+        if (statusEl) statusEl.textContent = "体重管理から削除中...";
+        try {
+          await postToGas({
+            type: "delete_weight",
+            rowNumber: row.rowNumber
+          });
+          setTimeout(() => syncAllFromSheet(), 900);
+        } catch (err) {
+          if (statusEl) statusEl.textContent = "削除エラー";
+        }
+      }
+    }
+
     function renderWeightHistory() {
       const listEl = document.getElementById("weightHistory");
       if (!appState.weightLogs.length) {
         listEl.innerHTML = `<div style="font-size:13px; color:var(--text-sub);">まだ体重記録がありません。</div>`;
         return;
       }
-      listEl.innerHTML = [...appState.weightLogs].reverse().map((row) => {
+      listEl.innerHTML = appState.weightLogs.map((row, idx) => ({ row, idx })).reverse().map(({ row, idx }) => {
         const shortDate = formatShortDateWithDay(row.date);
         const parts = [];
         if (row.weight !== null && row.weight !== undefined && row.weight !== "") {
@@ -1479,8 +1703,14 @@
         }
         return `
           <div class="history-item">
-            <span><strong>${shortDate}</strong> ${parts.join(" / ")}</span>
-            <span style="color:var(--text-sub);">${row.memo || "記録済み"}</span>
+            <div>
+              <div><strong>${shortDate}</strong> ${parts.join(" / ")}</div>
+              <div style="font-size:12px; color:var(--text-sub);">${row.memo || "記録済み"}</div>
+            </div>
+            <div class="history-right">
+              <button type="button" class="mini-action-btn" onclick="startWeightEdit(${idx})">編集</button>
+              <button type="button" class="mini-action-btn del" onclick="deleteWeightItem(${idx})">削除</button>
+            </div>
           </div>
         `;
       }).join("");
@@ -1497,6 +1727,7 @@
       return true;
     }
 
+    /* 体重フォーム送信（新規 or 修正） */
     document.getElementById("weightForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const date = document.getElementById("weightDate").value || formatLocalYmd(new Date());
@@ -1506,33 +1737,75 @@
       const memo = document.getElementById("weightMemo").value.trim();
       if (!wRaw && !bfRaw && !mRaw) return;
 
-      const numW = wRaw !== "" ? Number(wRaw) : Number(appState.currentWeight);
-      const numBf = bfRaw !== "" ? Number(bfRaw) : Number(appState.currentBodyFat);
+      const numW = wRaw !== "" ? Number(wRaw) : null;
+      const numBf = bfRaw !== "" ? Number(bfRaw) : null;
       const numM = mRaw !== "" ? Number(mRaw) : null;
 
-      appState.currentWeight = numW;
-      if (bfRaw !== "") {
-        appState.currentBodyFat = numBf;
-      }
-      if (numM !== null && !isNaN(numM)) {
-        appState.muscleMass = numM;
-        document.getElementById("muscleMassInput").value = numM;
+      const statusEl = document.getElementById("weightSyncStatus");
+
+      if (editingWeightIndex !== null && appState.weightLogs[editingWeightIndex]) {
+        const oldRow = appState.weightLogs[editingWeightIndex];
+        const updatedEntry = {
+          rowNumber: oldRow.rowNumber || null,
+          date,
+          weight: numW,
+          bodyFat: numBf,
+          muscleMass: numM,
+          memo: memo || "記録済み"
+        };
+        appState.weightLogs[editingWeightIndex] = updatedEntry;
+
+        syncLatestBodyMetricsFromLogs();
+        saveState();
+        renderWeightHistory();
+        refreshProgress();
+        cancelWeightEdit();
+
+        if (statusEl) statusEl.textContent = "体重管理を更新中...";
+        try {
+          if (updatedEntry.rowNumber) {
+            await postToGas({
+              type: "update_weight",
+              rowNumber: updatedEntry.rowNumber,
+              date: updatedEntry.date,
+              weight: updatedEntry.weight,
+              bodyFat: updatedEntry.bodyFat,
+              muscleMass: updatedEntry.muscleMass,
+              memo: updatedEntry.memo
+            });
+          } else {
+            await postToGas({
+              type: "weight",
+              date: updatedEntry.date,
+              weight: updatedEntry.weight,
+              bodyFat: updatedEntry.bodyFat,
+              muscleMass: updatedEntry.muscleMass,
+              memo: updatedEntry.memo
+            });
+          }
+          if (statusEl) statusEl.textContent = "体重管理 更新済み";
+          setTimeout(() => syncAllFromSheet(), 900);
+        } catch (err) {
+          if (statusEl) statusEl.textContent = "更新エラー";
+        }
+        return;
       }
 
       const entry = {
+        rowNumber: null,
         date,
-        weight: wRaw !== "" ? numW : null,
-        bodyFat: bfRaw !== "" ? numBf : null,
+        weight: numW,
+        bodyFat: numBf,
         muscleMass: numM,
         memo: memo || "記録済み"
       };
       appState.weightLogs.push(entry);
 
+      syncLatestBodyMetricsFromLogs();
       saveState();
       renderWeightHistory();
       refreshProgress();
 
-      const statusEl = document.getElementById("weightSyncStatus");
       if (statusEl) statusEl.textContent = "体重管理へ送信中...";
       try {
         await postToGas({
@@ -1544,6 +1817,7 @@
           memo: entry.memo
         });
         if (statusEl) statusEl.textContent = "体重管理に保存済み";
+        setTimeout(() => syncAllFromSheet(), 900);
       } catch (err) {
         if (statusEl) statusEl.textContent = "送信エラー";
       }
@@ -1552,6 +1826,7 @@
       document.getElementById("weightDate").value = date;
     });
 
+    /* 食事フォーム送信（新規 or 修正） */
     document.getElementById("mealForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const ymd = document.getElementById("mealDateInput").value || formatLocalYmd(new Date());
@@ -1570,7 +1845,67 @@
 
       if (!menu && !cal && !protein) return;
 
+      const statusEl = document.getElementById("mealSyncStatus");
+
+      if (editingMealTarget && Array.isArray(appState.mealLogsByDate[editingMealTarget.ymd]) && appState.mealLogsByDate[editingMealTarget.ymd][editingMealTarget.index]) {
+        const oldTarget = appState.mealLogsByDate[editingMealTarget.ymd][editingMealTarget.index];
+        const updatedMeal = {
+          rowNumber: oldTarget.rowNumber || null,
+          date: ymd,
+          mealType: selectedMealType,
+          menu: menu || "食事",
+          cal,
+          protein,
+          memo
+        };
+
+        if (editingMealTarget.ymd === ymd) {
+          appState.mealLogsByDate[ymd][editingMealTarget.index] = updatedMeal;
+        } else {
+          appState.mealLogsByDate[editingMealTarget.ymd].splice(editingMealTarget.index, 1);
+          if (!Array.isArray(appState.mealLogsByDate[ymd])) appState.mealLogsByDate[ymd] = [];
+          appState.mealLogsByDate[ymd].push(updatedMeal);
+        }
+
+        saveState();
+        renderMealView();
+        updateDailyCaloriesSummary();
+        cancelMealEdit();
+
+        if (statusEl) statusEl.textContent = "食事管理を更新中...";
+        try {
+          if (updatedMeal.rowNumber) {
+            await postToGas({
+              type: "update_meal",
+              rowNumber: updatedMeal.rowNumber,
+              date: updatedMeal.date,
+              mealType: updatedMeal.mealType,
+              menu: updatedMeal.menu,
+              cal: updatedMeal.cal,
+              protein: updatedMeal.protein,
+              memo: updatedMeal.memo
+            });
+          } else {
+            await postToGas({
+              type: "meal",
+              date: updatedMeal.date,
+              mealType: updatedMeal.mealType,
+              menu: updatedMeal.menu,
+              cal: updatedMeal.cal,
+              protein: updatedMeal.protein,
+              memo: updatedMeal.memo
+            });
+          }
+          if (statusEl) statusEl.textContent = "食事管理 更新済み";
+          setTimeout(() => syncAllFromSheet(), 900);
+        } catch (err) {
+          if (statusEl) statusEl.textContent = "更新エラー";
+        }
+        return;
+      }
+
       const mealItem = {
+        rowNumber: null,
         date: ymd,
         mealType: selectedMealType,
         menu: menu || "食事",
@@ -1588,7 +1923,6 @@
       renderMealView();
       updateDailyCaloriesSummary();
 
-      const statusEl = document.getElementById("mealSyncStatus");
       if (statusEl) statusEl.textContent = "食事管理へ送信中...";
       try {
         await postToGas({
@@ -1601,6 +1935,7 @@
           memo: mealItem.memo
         });
         if (statusEl) statusEl.textContent = "食事管理に保存済み";
+        setTimeout(() => syncAllFromSheet(), 900);
       } catch (err) {
         if (statusEl) statusEl.textContent = "送信エラー";
       }
@@ -1637,13 +1972,15 @@
     }
 
     function applyMealsFromSheet(mealsList) {
-      if (!Array.isArray(mealsList) || mealsList.length === 0) return;
+      if (!Array.isArray(mealsList)) return;
       const grouped = {};
       mealsList.forEach((m) => {
         const key = normalizeDateKey(m.date);
         if (!key) return;
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push({
+          rowNumber: m.rowNumber || null,
+          date: key,
           mealType: m.mealType || "朝食",
           menu: m.menu || "食事",
           cal: Number(m.cal) || 0,
@@ -1658,8 +1995,9 @@
     }
 
     function applyWeightsFromSheet(weightsList) {
-      if (!Array.isArray(weightsList) || weightsList.length === 0) return;
+      if (!Array.isArray(weightsList)) return;
       appState.weightLogs = weightsList.map((w) => ({
+        rowNumber: w.rowNumber || null,
         date: normalizeDateKey(w.date) || String(w.date || ""),
         weight: (w.weight === "" || w.weight === null || w.weight === undefined) ? null : Number(w.weight),
         bodyFat: (w.bodyFat === "" || w.bodyFat === null || w.bodyFat === undefined) ? null : Number(w.bodyFat),
@@ -1667,18 +2005,7 @@
         memo: w.memo || "記録済み"
       }));
 
-      const latest = appState.weightLogs[appState.weightLogs.length - 1];
-      if (latest && latest.weight > 0) {
-        appState.currentWeight = latest.weight;
-      }
-      if (latest && latest.bodyFat !== null && latest.bodyFat !== undefined && latest.bodyFat > 0) {
-        appState.currentBodyFat = latest.bodyFat;
-      }
-      if (latest && latest.muscleMass !== null && latest.muscleMass !== undefined && latest.muscleMass > 0) {
-        appState.muscleMass = latest.muscleMass;
-        document.getElementById("muscleMassInput").value = latest.muscleMass;
-      }
-
+      syncLatestBodyMetricsFromLogs();
       saveState();
       renderWeightHistory();
       refreshProgress();
